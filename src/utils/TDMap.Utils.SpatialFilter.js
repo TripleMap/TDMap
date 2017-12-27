@@ -2,22 +2,22 @@ export var SpatialFilterUtils = {};
 
 SpatialFilterUtils.SpatialFilterPolygon = L.Polygon.extend({
 	options: {
-		className: 'leaflet-interactive spatial-filter-polygon',
+		className: "leaflet-interactive spatial-filter-polygon"
 	}
 });
 SpatialFilterUtils.SpatialFilterCircle = L.Circle.extend({
 	options: {
-		className: 'leaflet-interactive spatial-filter-cirlce',
+		className: "leaflet-interactive spatial-filter-cirlce"
 	}
 });
 
 L.Editable.PathEditor.prototype.onVertexMarkerAddEvent = function(e) {
-	this.fireAndForward('editable:vertex:add', e);
+	this.fireAndForward("editable:vertex:add", e);
 };
 
 SpatialFilterUtils.SpatialFilterVertex = L.Editable.VertexMarker.extend({
 	options: {
-		className: 'leaflet-div-icon leaflet-editing-icon spatial-filter-edge',
+		className: "leaflet-div-icon leaflet-editing-icon spatial-filter-edge"
 	},
 
 	onAdd: function(map) {
@@ -32,7 +32,8 @@ SpatialFilterUtils.SpatialFilterVertex = L.Editable.VertexMarker.extend({
 
 SpatialFilterUtils.SpatialFilterMiddleVertex = L.Editable.MiddleMarker.extend({
 	options: {
-		className: 'leaflet-div-icon leaflet-editing-icon spatial-filter-middleEdge',
+		className:
+			"leaflet-div-icon leaflet-editing-icon spatial-filter-middleEdge"
 	}
 });
 
@@ -43,7 +44,7 @@ export var SpatialFilter = L.Editable.extend({
 		middleMarkerClass: SpatialFilterUtils.SpatialFilterMiddleVertex,
 		circleClass: SpatialFilterUtils.SpatialFilterCircle,
 		lineGuideOptions: {
-			className: 'measurment-lineguide',
+			className: "measurment-lineguide"
 		}
 	},
 
@@ -52,10 +53,14 @@ export var SpatialFilter = L.Editable.extend({
 		L.setOptions(this, options);
 		this.map = map;
 		this.map.spatialFilter = this;
-		map.on('spatialfilter:stop', function() {
-			this.abortDrawing();
-			this.featuresLayer.remove();
-		}, this);
+		map.on(
+			"spatialfilter:stop",
+			function() {
+				this.abortDrawing();
+				this.featuresLayer.remove();
+			},
+			this
+		);
 	},
 
 	disableMapZoom: function() {
@@ -75,11 +80,11 @@ export var SpatialFilter = L.Editable.extend({
 		}, 10);
 	},
 	abortDrawing: function() {
-		this.off('editable:drawing:end', this.enableMapZoomWhile);
-		this.off('editable:drawing:end', this.drawingPolygonEnd);
-		this.off('editable:vertex:dragend', this.drawingPolygonEnd);
-		this.off('editable:drawing:end', this.drawingCircleEnd);
-		this.off('editable:vertex:dragend', this.drawingCircleEnd);
+		this.off("editable:drawing:end", this.enableMapZoomWhile);
+		this.off("editable:drawing:end", this.drawingPolygonEnd);
+		this.off("editable:vertex:dragend", this.drawingPolygonEnd);
+		this.off("editable:drawing:end", this.drawingCircleEnd);
+		this.off("editable:vertex:dragend", this.drawingCircleEnd);
 		this.enableMapZoom();
 		this.stopDrawing();
 		this.featuresLayer.remove();
@@ -87,23 +92,22 @@ export var SpatialFilter = L.Editable.extend({
 	},
 
 	startPolygonSpatialFilter: function() {
-		this.on('editable:drawing:end', this.drawingPolygonEnd);
-		this.on('editable:vertex:dragend', this.drawingPolygonEnd);
-		this.on('editable:vertex:deleted', this.drawingPolygonEnd);
-		this.on('editable:vertex:add', this.drawingPolygonEnd);
-		this.on('editable:drawing:start', this.disableMapZoom, this);
-		this.on('editable:drawing:end', this.enableMapZoomWhile, this);
+		this.on("editable:drawing:end", this.drawingPolygonEnd);
+		this.on("editable:vertex:dragend", this.drawingPolygonEnd);
+		this.on("editable:vertex:deleted", this.drawingPolygonEnd);
+		this.on("editable:vertex:add", this.drawingPolygonEnd);
+		this.on("editable:drawing:start", this.disableMapZoom, this);
+		this.on("editable:drawing:end", this.enableMapZoomWhile, this);
 		L.Editable.prototype.startPolygon.call(this);
-
 	},
 
 	startCircleSpatialFilter: function() {
-		this.on('editable:drawing:start', this.disableMapZoom, this);
-		this.on('editable:drawing:end', this.drawingCircleEnd);
-		this.on('editable:vertex:dragend', this.drawingCircleEnd);
-		this.on('editable:vertex:drag', this.shawRadius);
-		this.on('editable:drawing:end', this.enableMapZoomWhile, this);
-		this.map.on('zoomend', this.shawRadius, this);
+		this.on("editable:drawing:start", this.disableMapZoom, this);
+		this.on("editable:drawing:end", this.drawingCircleEnd);
+		this.on("editable:vertex:dragend", this.drawingCircleEnd);
+		this.on("editable:vertex:drag", this.shawRadius);
+		this.on("editable:drawing:end", this.enableMapZoomWhile, this);
+		this.map.on("zoomend", this.shawRadius, this);
 		L.Editable.prototype.startCircle.call(this);
 	},
 
@@ -120,16 +124,24 @@ export var SpatialFilter = L.Editable.extend({
 		e.editTools.featuresLayer.eachLayer(function(layer) {
 			layer.bringToBack();
 		});
-		var layer = this.featuresLayer._layers[this.featuresLayer._leaflet_id + 1];
-		layer._map.fireEvent('spatialfilter:bounds', layer.toGeoJSON().geometry.coordinates);
+		var layer = this.featuresLayer._layers[
+			this.featuresLayer._leaflet_id + 1
+		];
+		layer._map.fireEvent(
+			"spatialfilter:bounds",
+			layer.toGeoJSON().geometry.coordinates
+		);
 	},
 
 	drawingCircleEnd: function(e) {
 		e.editTools.featuresLayer.eachLayer(function(layer) {
 			layer.bringToBack();
 		});
-		var layer = e.editTools.featuresLayer._layers[e.editTools.featuresLayer._leaflet_id + 1];
-		layer._map.fireEvent('spatialfilter:circle', {
+		var layer =
+			e.editTools.featuresLayer._layers[
+				e.editTools.featuresLayer._leaflet_id + 1
+			];
+		layer._map.fireEvent("spatialfilter:circle", {
 			centerPoint: layer._latlng,
 			radius: layer.getRadius()
 		});
@@ -150,22 +162,23 @@ export var SpatialFilter = L.Editable.extend({
 		editor.createMouseMoveLabel(distance, screenCords);
 	},
 
-
 	createMouseMoveLabel: function(distance, screenCords) {
 		this.removeLabel();
-		if (distance === undefined) {
+		if (!distance) {
 			return;
 		}
-		if (distance < 1000) {
-			distance = 'Радиус: ' + distance.toFixed(0) + ' м';
-		} else {
-			distance = 'Радиус: ' + (distance / 1000).toFixed(1) + ' км';
-		}
+		distance < 1000
+			? (distance = "Радиус: " + distance.toFixed(0) + " м")
+			: (distance = "Радиус: " + (distance / 1000).toFixed(1) + " км");
 
-
-		var group = d3.select('.leaflet-overlay-pane').select('svg').append('g').attr("class", 'spatial-filter');
+		var group = d3
+			.select(".leaflet-overlay-pane")
+			.select("svg")
+			.append("g")
+			.attr("class", "spatial-filter");
 		var rectangle = group.append("rect");
-		var text = group.append('text')
+		var text = group
+			.append("text")
 			.attr("x", screenCords.x + 25)
 			.attr("y", screenCords.y - 15)
 			.attr("class", "spatial-filter-label-text")
@@ -182,11 +195,12 @@ export var SpatialFilter = L.Editable.extend({
 					x = text.attr("x"),
 					y = text.attr("y"),
 					dy = 0,
-					tspan = text.text(null)
-					.append("tspan")
-					.attr("x", x)
-					.attr("y", y)
-					.attr("dy", dy + "em");
+					tspan = text
+						.text(null)
+						.append("tspan")
+						.attr("x", x)
+						.attr("y", y)
+						.attr("dy", dy + "em");
 				while (word) {
 					word = words.pop();
 					line.push(word);
@@ -195,7 +209,8 @@ export var SpatialFilter = L.Editable.extend({
 						line.pop();
 						tspan.text(line.join("/"));
 						line = [word];
-						tspan = text.append("tspan")
+						tspan = text
+							.append("tspan")
 							.attr("x", x)
 							.attr("y", y)
 							.attr("dy", ++lineNumber * lineHeight + dy + "em")
@@ -228,7 +243,7 @@ export var SpatialFilter = L.Editable.extend({
 	},
 
 	removeLabel: function() {
-		var elem = $('.spatial-filter');
+		var elem = $(".spatial-filter");
 		if (elem) {
 			elem.remove();
 		}

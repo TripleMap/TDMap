@@ -1,17 +1,13 @@
 export class Promises {
-    getPromise(url, params, headers) {
-        var request = {
+    getPromise(url, params) {
+        // для проформы
+        let request = {
             url: url,
-            type: 'GET',
+            type: "GET"
         };
 
-        if (params !== null && params !== undefined) {
-            request.params = params;
-        }
+        if (params) request.params = params;
 
-        if (headers !== null && headers !== undefined) {
-            request.headers = headers;
-        }
         return $.get(request);
     }
-};
+}
