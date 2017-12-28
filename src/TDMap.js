@@ -6,19 +6,21 @@ import { CadastrSearchPPK5 } from "./utils/TDMap.Utils.rosreesrtParse.js";
 
 // tools
 import { MeasurmentUtils, Measurment } from "./tools/TDMap.Tools.Measurment.js";
-import { SpatialFilterUtils, SpatialFilter } from "./tools/TDMap.Tools.SpatialFilter.js";
+import {
+	SpatialFilterUtils,
+	SpatialFilter
+} from "./tools/TDMap.Tools.SpatialFilter.js";
 
 // routing
 import { Routing } from "./routing/TDMap.Routing.Router.js";
 
 // services
-import { GeoJSONService } from "./service/TDMap.Service.GeoJSONService.js";
+import { GeoJSONService } from "./providers/TDMap.Provider.GeoJSONProvider/TDMap.Service.GeoJSONService.js";
 
 // layers
 import { GoogleProvider } from "./providers/TDMap.Provider.GoogleProvider.js";
 import { YandexProvider } from "./providers/TDMap.Provider.YandexProvider.js";
 import { RosreestrProvider } from "./providers/TDMap.Provider.RosreestrProvider.js";
-
 
 // complete
 class TDMapConstructor {
@@ -49,3 +51,18 @@ class TDMapConstructor {
 
 export var TDMap = new TDMapConstructor();
 window.TDMap = TDMap;
+
+
+
+
+// manager 
+import { Manager } from "./mapping/TDMap.Mapping.Manager.js";
+
+
+class TDMapManagerConstructor extends Manager {
+	constructor(mapDivId, center, zoom) {
+		this.super(mapDivId, center, zoom);
+	}
+}
+
+export var TDMapManager = new TDMapManagerConstructor;
