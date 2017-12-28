@@ -1,35 +1,13 @@
-import {
-    Promises
-} from "../utils/TDMap.Utils.Promises.js";
-import {
-    Subject
-} from "rxjs/Subject";
+import { Promises } from "../utils/TDMap.Utils.Promises.js";
+import { GeoJSONSelection } from "./TDMap.Service.GeoJSONSelection.js";
+import { GeoJSONProvider } from "./TDMap.Service.GeoJSONProvider.js";
+
+import { Subject } from "rxjs/Subject";
 import 'rxjs/add/operator/map';
-export var GeoJSONProvider = L.Class.extend({
-    initialize: function(dataUrl) {
-        if (!dataUrl) {
-            throw new Error("Не задан url для GeoJSONProvider");
-        }
-        this.dataUrl = dataUrl;
-    },
 
-    getDataByBounds: function(bounds, labelLayer, styleLayer) {
-        let params = {};
-        bounds instanceof L.LatLngBounds ? (params.bbox = this._getMinMaxBounds(bounds)) : (params.bbox = bounds);
-        params.labeled = labelLayer || false;
-        params.styled = styleLayer || false;
-        return TDMap.Utils.Promises.getPromise(this.dataUrl, params);
-    },
-
-    _getMinMaxBounds: function(bounds) {
-        let nw = bounds.getNorthWest();
-        let se = bounds.getSouthEast();
-        return [nw.lng, se.lat, se.lng, nw.lat].toString();
-    }
-});
 
 export var GeoJSONService = L.GeoJSON.extend({
-    // стили приходят с сервера feature.properties.style
+    // стили приходят с сервера feature.properies.style
     // стили пользователя хранятся на сервере с привязкой к атрибуту
     initialize: function(options) {
         L.setOptions(this, options);
@@ -38,6 +16,9 @@ export var GeoJSONService = L.GeoJSON.extend({
         this.filteredIds = [];
         this.featuresFlow = new Subject();
         this._processFeatures();
+        if (this.options.selectable) {
+            this.selections = new GeoJSONSelection(this.options.selectionOptions || {});
+        }
     },
 
     setStyled: () => (this.styled = true),
@@ -99,9 +80,33 @@ export var GeoJSONService = L.GeoJSON.extend({
         if (!features) return;
 
         for (let i = features.length - 1; i >= 0; i--) {
-            this.addData(features[i]);
+            this.addData(features[i])
         }
+        this.subscribeOnSelection();
         this._map.fire("layer:load");
+    },
+
+    subscribeOnSelection: function() {
+        if (this.options.selectable) {
+            this.eachLayer(layer => {
+                if (this.selections.isInSelections(layer)) {
+                    this.selections.setSelectionStyle(layer)
+                }
+            });
+
+            this.on('click', this.selections.addSelections, this.selections);
+            this._map.doubleClickZoom.disable();
+            this.on('dblclick', this.clearSelections, this);
+        }
+    },
+
+    clearSelections: function() {
+        this.eachLayer(layer => {
+            if (this.selections.isInSelections(layer)) {
+                layer.setStyle(layer.beforeSelectionStyle);
+            }
+        })
+        this.selections.clearSelections();
     },
 
     setFilteredIds: arrayOfId => {
@@ -111,7 +116,7 @@ export var GeoJSONService = L.GeoJSON.extend({
 
     stayOrRemoveViaFilteredIds: () => {
         this.eachLayer(layer => {
-            if (this.filteredIds.indexOf(layer.feature.properties.zu_id) === -1) {
+            if (this.filteredIds.indexOf(layer.feature.properies.zu_id) === -1) {
                 layer._path.style.visibility = "hidden";
             } else {
                 if (layer._path.style.visibility === "hidden") {
