@@ -1,18 +1,19 @@
 export class Manager {
 
-	constructor(mapDivId, center, zoom, memorize) {
-		this.createLeafletMap(mapDivId, center, zoom);
-		if (memorize) {
+	constructor(params) {
+		this.options = params;
+		this.createLeafletMap(params.mapDivId || 'map', params.center || [60, 30], params.zoom || 12, params.zoomControl || false, params.editable || false);
+		if (params.memorize) {
 			this.restoreMapPosition();
 		}
 	}
 
-	createLeafletMap(mapDivId, center, zoom) {
-		this._map = L.map(mapElementId, {
-			editable: true,
-			center: center,
-			zoom: zoom,
-			zoomControl: false
+	createLeafletMap(mapDivId, center, zoom, zoomControl, editable) {
+		this._map = L.map(mapDivId, {
+			editable,
+			center,
+			zoom,
+			zoomControl
 		});
 	}
 
@@ -43,6 +44,11 @@ export class Manager {
 		};
 
 		window.addEventListener("beforeunload", saveMapState);
+	}
+
+	updateMapPosition(latLng, zoom) {
+		this._map.setView(latLng, zoom);
+		return this;
 	}
 
 }

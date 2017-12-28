@@ -50,18 +50,23 @@ class TDMapConstructor {
 }
 
 export var TDMap = new TDMapConstructor();
-window.TDMap = TDMap;
-
-
-
 
 // manager 
 import { Manager } from "./mapping/TDMap.Mapping.Manager.js";
 
-
+/*
+ 	params {
+		mapDivId: divid,
+		center: [number, number]
+		zoom: number,
+		editable: boolean,
+		zoomControl: boolea,
+		memorize: boolean
+	}
+*/
 class TDMapManagerConstructor extends Manager {
-	constructor(mapDivId, center, zoom) {
-		this.super(mapDivId, center, zoom);
+	constructor(params) {
+		super(params);
 	}
 }
 

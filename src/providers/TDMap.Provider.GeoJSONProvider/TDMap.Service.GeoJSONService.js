@@ -1,4 +1,4 @@
-import { Promises } from "../utils/TDMap.Utils.Promises.js";
+import { Promises } from "../../utils/TDMap.Utils.Promises.js";
 import { GeoJSONSelection } from "./TDMap.Service.GeoJSONSelection.js";
 import { GeoJSONProvider } from "./TDMap.Service.GeoJSONProvider.js";
 
