@@ -1,5 +1,9 @@
-import { Promises } from "../utils/TDMap.Utils.Promises.js";
-import { Subject } from "rxjs/Subject";
+import {
+    Promises
+} from "../utils/TDMap.Utils.Promises.js";
+import {
+    Subject
+} from "rxjs/Subject";
 import 'rxjs/add/operator/map';
 export var GeoJSONProvider = L.Class.extend({
     initialize: function(dataUrl) {
@@ -24,7 +28,7 @@ export var GeoJSONProvider = L.Class.extend({
     }
 });
 
-export var GeoJSONServiceLayer = L.GeoJSON.extend({
+export var GeoJSONService = L.GeoJSON.extend({
     // стили приходят с сервера feature.properties.style
     // стили пользователя хранятся на сервере с привязкой к атрибуту
     initialize: function(options) {
@@ -106,9 +110,8 @@ export var GeoJSONServiceLayer = L.GeoJSON.extend({
     },
 
     stayOrRemoveViaFilteredIds: () => {
-        var that = this;
-        this.eachLayer(function(layer) {
-            if (that.filteredIds.indexOf(layer.feature.properties.zu_id) === -1) {
+        this.eachLayer(layer => {
+            if (this.filteredIds.indexOf(layer.feature.properties.zu_id) === -1) {
                 layer._path.style.visibility = "hidden";
             } else {
                 if (layer._path.style.visibility === "hidden") {
@@ -125,6 +128,6 @@ export var GeoJSONServiceLayer = L.GeoJSON.extend({
         return this;
     }
 });
-export var geoJSONServiceLayer = function(options) {
-    return new GeoJSONServiceLayer(options);
+export var geoJSONService = function(options) {
+    return new GeoJSONService(options);
 };
