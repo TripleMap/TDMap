@@ -65,4 +65,4 @@ class TDMapManagerConstructor extends Manager {
 	}
 }
 
-export var TDMapManager = new TDMapManagerConstructor;
+export var TDMapManager = TDMapManagerConstructor;
