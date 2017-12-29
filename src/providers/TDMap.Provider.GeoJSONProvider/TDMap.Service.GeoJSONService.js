@@ -1,8 +1,16 @@
-import { Promises } from "../../utils/TDMap.Utils.Promises.js";
-import { GeoJSONSelection } from "./TDMap.Service.GeoJSONSelection.js";
-import { GeoJSONProvider } from "./TDMap.Service.GeoJSONProvider.js";
+import {
+    Promises
+} from "../../utils/TDMap.Utils.Promises.js";
+import {
+    GeoJSONSelection
+} from "./TDMap.Service.GeoJSONSelection.js";
+import {
+    GeoJSONProvider
+} from "./TDMap.Service.GeoJSONProvider.js";
 
-import { Subject } from "rxjs/Subject";
+import {
+    Subject
+} from "rxjs/Subject";
 import 'rxjs/add/operator/map';
 
 
@@ -90,7 +98,7 @@ export var GeoJSONService = L.GeoJSON.extend({
         if (this.options.selectable) {
             this.eachLayer(layer => {
                 if (this.selections.isInSelections(layer)) {
-                    this.selections.setSelectionStyle(layer)
+                    this.selections.setSelectionStyle(layer, true)
                 }
             });
 
@@ -103,7 +111,7 @@ export var GeoJSONService = L.GeoJSON.extend({
     clearSelections: function() {
         this.eachLayer(layer => {
             if (this.selections.isInSelections(layer)) {
-                layer.setStyle(layer.beforeSelectionStyle);
+                this.selections.setBeforeSelectionStyle(layer);
             }
         })
         this.selections.clearSelections();
