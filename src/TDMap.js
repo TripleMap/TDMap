@@ -49,8 +49,8 @@ class TDMapConstructor {
 	}
 }
 
-export var TDMap = new TDMapConstructor();
-
+export const TDMap = new TDMapConstructor();
+window.TDMap = TDMap;
 // manager 
 import { Manager } from "./mapping/TDMap.Mapping.Manager.js";
 
@@ -70,4 +70,5 @@ class TDMapManagerConstructor extends Manager {
 	}
 }
 
-export var TDMapManager = TDMapManagerConstructor;
+export const TDMapManager = TDMapManagerConstructor;
+window.TDMapManager = TDMapManager;
