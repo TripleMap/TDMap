@@ -90,31 +90,20 @@ export var GeoJSONService = L.GeoJSON.extend({
         for (let i = features.length - 1; i >= 0; i--) {
             this.addData(features[i])
         }
-        this.subscribeOnSelection();
         this._map.fire("layer:load");
+        this.subscribeOnSelection();
     },
 
     subscribeOnSelection: function() {
         if (this.options.selectable) {
             this.eachLayer(layer => {
-                if (this.selections.isInSelections(layer)) {
-                    this.selections.setSelectionStyle(layer, true)
-                }
+                this.selections.addSelections(layer, true)
             });
 
             this.on('click', this.selections.addSelections, this.selections);
             this._map.doubleClickZoom.disable();
-            this.on('dblclick', this.clearSelections, this);
+            this.on('dblclick', this.selections.clearSelections, this.selections);
         }
-    },
-
-    clearSelections: function() {
-        this.eachLayer(layer => {
-            if (this.selections.isInSelections(layer)) {
-                this.selections.setBeforeSelectionStyle(layer);
-            }
-        })
-        this.selections.clearSelections();
     },
 
     setFilteredIds: arrayOfId => {
@@ -141,6 +130,7 @@ export var GeoJSONService = L.GeoJSON.extend({
         return this;
     }
 });
+
 export var geoJSONService = function(options) {
     return new GeoJSONService(options);
 };

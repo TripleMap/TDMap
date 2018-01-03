@@ -13,13 +13,18 @@ export var GeoJSONSelection = L.Class.extend({
 
     initialize: function(options) {
         L.setOptions(this, options);
-        this.previousLayer = null;
+        this.previousLayer = [];
         this.tempSelectedFeature = new BehaviorSubject(false);
-        this.inSelectionsFeatureIds = new BehaviorSubject([]);
+        this.inSelectionsFeatures = new BehaviorSubject([]);
+
+        document.onkeydown = (e) => {
+            if (e.keyCode === 27) {
+                this.clearSelections();
+            }
+        };
     },
 
     addSelections: function(eventOrFeature, onDataAdd) {
-        // 
         if (!eventOrFeature) return;
         let layer = eventOrFeature.layer || eventOrFeature;
         let ctrlKey = false;
@@ -27,29 +32,45 @@ export var GeoJSONSelection = L.Class.extend({
             ctrlKey = true;
         }
 
-        if (!this.isInSelections(layer)) {
-            this.setSelectionStyle(layer);
-            if (this.options.multiple) {
-                this.inSelectionsFeatureIds.next(this.inSelectionsFeatureIds.getValue().concat([layer]))
-            } else {
-                this.setBeforeSelectionStyle(this.previousLayer);
-                this.previousLayer = layer;
-                this.inSelectionsFeatureIds.next([layer]);
+        if (onDataAdd && this.previousLayer.length) {
+            for (let i = this.previousLayer.length - 1; i >= 0; i--) {
+                if (this.previousLayer[i].feature.properies.id === layer.feature.properies.id) {
+                    this.previousLayer[i] = layer;
+                }
             }
-        } else {
-            if (!onDataAdd) {
-                this.setBeforeSelectionStyle(layer);
-                this.removeSelection(layer);
-            } else {
-                //реплайсим
+        }
+        if (onDataAdd && this.isInSelections(layer)) {
+            let layers = this.inSelectionsFeatures.getValue();
+            for (let i = 0; i < layers.length; i++) {
+                if (layers[i].feature.properies.id === layer.feature.properies.id) {
+                    layers[i] = layer;
+                    this.setSelectionStyle(layer);
+                }
+            }
+            this.inSelectionsFeatures.next(layers);
+        }
+
+        if (!onDataAdd) {
+            if (!this.isInSelections(layer)) {
+                if (this.options.multiple || ctrlKey) {
+                    this.previousLayer.push(layer);
+                    this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().concat([layer]))
+                } else {
+                    for (let i = this.previousLayer.length - 1; i >= 0; i--) {
+                        this.setBeforeSelectionStyle(this.previousLayer[i]);
+                    }
+                    this.previousLayer = [layer];
+                    this.inSelectionsFeatures.next([layer]);
+                }
                 this.setSelectionStyle(layer);
-                let layers = this.inSelectionsFeatureIds.getValue();
-                for (var i = 0; i < layers.length; i++) {
-                    if (layers[i].feature.properies.id === layer.feature.properies.id) {
-                        layers[i] = layers
+            } else {
+                for (let i = this.previousLayer.length - 1; i >= 0; i--) {
+                    if (this.previousLayer[i].feature.properies.id === layer.feature.properies.id) {
+                        this.previousLayer.splice(i, 1);
                     }
                 }
-                this.inSelectionsFeatureIds.next(this.inSelectionsFeatureIds.getValue().concat(layers))
+                this.setBeforeSelectionStyle(layer);
+                this.removeSelectionLayer(layer);
             }
         }
     },
@@ -69,17 +90,22 @@ export var GeoJSONSelection = L.Class.extend({
     },
 
     isInSelections: function(layer) {
-        return (this.inSelectionsFeatureIds
+        return (this.inSelectionsFeatures
             .getValue()
-            .filter(inSelectionsFeatureId => inSelectionsFeatureId.feature.properies.id === layer.feature.properies.id ? true : false)
+            .filter(inSelectionsFeatureId => inSelectionsFeatureId.feature.properies.id === layer.feature.properies.id ? inSelectionsFeatureId : false)
             .length > 0);
     },
 
-    removeSelection: function(layer) {
+    removeSelectionLayer: function(layer) {
         this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().filter(item => item.feature.properies.id === layer.feature.properies.id ? false : item));
     },
 
     clearSelections: function() {
+        this.previousLayer = [];
+        let layers = this.inSelectionsFeatures.getValue();
+        for (let i = layers.length - 1; i >= 0; i--) {
+            this.setBeforeSelectionStyle(layers[i]);
+        }
         this.inSelectionsFeatures.next([]);
     },
 
