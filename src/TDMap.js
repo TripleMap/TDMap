@@ -6,10 +6,8 @@ import { CadastrSearchPPK5 } from "./utils/TDMap.Utils.rosreesrtParse.js";
 
 // tools
 import { MeasurmentUtils, Measurment } from "./tools/TDMap.Tools.Measurment.js";
-import {
-	SpatialFilterUtils,
-	SpatialFilter
-} from "./tools/TDMap.Tools.SpatialFilter.js";
+import { SpatialFilterUtils, SpatialFilter }from "./tools/TDMap.Tools.SpatialFilter.js";
+import { PulseMarker, IconPulse }from "./tools/TDMap.Tools.PulseMarker.js";
 
 // routing
 import { Routing } from "./routing/TDMap.Routing.Router.js";
@@ -37,7 +35,9 @@ class TDMapConstructor {
 			MeasurmentUtils,
 			Measurment,
 			SpatialFilterUtils,
-			SpatialFilter
+			SpatialFilter,
+			IconPulse,
+			PulseMarker
 		};
 		this.Utils = {
 			GeoUtil,

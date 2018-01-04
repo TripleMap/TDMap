@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -96,16 +96,19 @@ exports.root = _root;
 "use strict";
 
 
-var __extends = this && this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() {
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var __extends = undefined && undefined.__extends || function (d, b) {
+    for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+    }function __() {
         this.constructor = d;
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var isFunction_1 = __webpack_require__(8);
+var isFunction_1 = __webpack_require__(7);
 var Subscription_1 = __webpack_require__(2);
-var Observer_1 = __webpack_require__(10);
+var Observer_1 = __webpack_require__(9);
 var rxSubscriber_1 = __webpack_require__(3);
 /**
  * Implements the {@link Observer} interface and extends the
@@ -142,7 +145,7 @@ var Subscriber = function (_super) {
                     this.destination = Observer_1.empty;
                     break;
                 }
-                if (typeof destinationOrNext === 'object') {
+                if ((typeof destinationOrNext === 'undefined' ? 'undefined' : _typeof(destinationOrNext)) === 'object') {
                     if (destinationOrNext instanceof Subscriber) {
                         this.syncErrorThrowable = destinationOrNext.syncErrorThrowable;
                         this.destination = destinationOrNext;
@@ -316,7 +319,7 @@ var SafeSubscriber = function (_super) {
         if (!this.isStopped) {
             var _parentSubscriber = this._parentSubscriber;
             if (this._complete) {
-                var wrappedComplete = function () {
+                var wrappedComplete = function wrappedComplete() {
                     return _this._complete.call(_this._context);
                 };
                 if (!_parentSubscriber.syncErrorThrowable) {
@@ -366,11 +369,13 @@ var SafeSubscriber = function (_super) {
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var isArray_1 = __webpack_require__(24);
 var isObject_1 = __webpack_require__(25);
-var isFunction_1 = __webpack_require__(8);
+var isFunction_1 = __webpack_require__(7);
 var tryCatch_1 = __webpack_require__(26);
-var errorObject_1 = __webpack_require__(9);
+var errorObject_1 = __webpack_require__(8);
 var UnsubscriptionError_1 = __webpack_require__(27);
 /**
  * Represents a disposable resource, such as the execution of an Observable. A
@@ -492,7 +497,7 @@ var Subscription = function () {
             return this;
         }
         var subscription = teardown;
-        switch (typeof teardown) {
+        switch (typeof teardown === 'undefined' ? 'undefined' : _typeof(teardown)) {
             case 'function':
                 subscription = new Subscription(teardown);
             case 'object':
@@ -569,8 +574,8 @@ function flattenUnsubscriptionErrors(errors) {
 
 
 var root_1 = __webpack_require__(0);
-var Symbol = root_1.root.Symbol;
-exports.rxSubscriber = typeof Symbol === 'function' && typeof Symbol.for === 'function' ? Symbol.for('rxSubscriber') : '@@rxSubscriber';
+var _Symbol = root_1.root.Symbol;
+exports.rxSubscriber = typeof _Symbol === 'function' && typeof _Symbol.for === 'function' ? _Symbol.for('rxSubscriber') : '@@rxSubscriber';
 /**
  * @deprecated use rxSubscriber instead
  */
@@ -579,493 +584,61 @@ exports.$$rxSubscriber = exports.rxSubscriber;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class Promises {
-    getPromise(url, params) {
-        // для проформы
-        let request = {
-            url: url,
-            type: "GET"
-        };
-
-        if (params) request.params = params;
-
-        return $.get(request);
-    }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Promises;
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class CadastrSearchProviderPPK5 {
-	constructor(map) {
-		this.map = map;
-	}
-
-	getDataByMask(cadnum) {}
-	getDataByMaskAsynch(cadnum) {
-		var d = $.Deferred();
-		getDataFromServer();
-
-		function getDataFromServer() {
-			function random() {
-				return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-			}
-
-			var urlOptions = {
-				text: cadnum,
-				tolerance: "16391",
-				limit: 16,
-				callback: "JQuery" + random() + random()
-			};
-
-			var array = [];
-			var arrayWithOutCords = [];
-			this[urlOptions.callback] = function (data) {};
-			var text = `${Number(cadnum.split(":")[0]).toString()}:${Number(cadnum.split(":")[1]).toString()}:${Number(cadnum.split(":")[2]).toString()}:${Number(cadnum.split(":")[3]).toString()}`;
-			$.ajax({
-				url: "https://pkk5.rosreestr.ru/api/features/1/" + text,
-				type: "GET",
-				dataType: "jsonp",
-				success: function (response) {
-					if (response.feature !== undefined && response.feature !== null) {
-						if (response.feature.center && response.feature.extent) {
-							var cords = L.Projection.SphericalMercator.unproject(L.point(response.feature.center.x, response.feature.center.y));
-							var obj = {
-								type: "Feature",
-								geojson: {
-									type: "Point",
-									coordinates: [cords[Object.keys(cords)[1]], cords[Object.keys(cords)[0]]]
-								}
-							};
-							obj.properties = response.feature.attrs;
-							obj.properties.extent = response.feature.extent;
-							obj.properties.center = response.feature.center;
-							array.push(obj);
-							d.resolve(array, "withCoords");
-						} else {
-							arrayWithOutCords.push({
-								type: "Feature",
-								properties: {
-									cn: response.feature.attrs.cn,
-									id: response.feature.attrs.id
-								}
-							});
-							d.resolve(arrayWithOutCords, "withoutCoords");
-						}
-					} else {
-						d.resolve([], "noObjects");
-					}
-				},
-				error: function (error) {
-					d.reject(" Failed: " + error);
-				}
-			});
-		}
-		return d.promise();
-	}
-
-	getPointsOfImageByMaskAsynch(cadnum, options) {
-		var d = $.Deferred();
-		var getDataFromServer = function () {
-			var urlOptions = {
-				dpi: "96",
-				transparent: "true",
-				format: "png32",
-				layers: "show:6,7",
-				bbox: options.bbox3857,
-				bboxSR: options.bboxSR,
-				imageSR: options.imageSR,
-				size: options.size,
-				layerDefs: JSON.stringify({
-					"6": "ID = '" + cadnum + "'",
-					"7": "ID = '" + cadnum + "'"
-				}),
-				f: "image"
-			};
-			var pstr = L.Util.getParamString(urlOptions);
-			$.ajax({
-				url: "http://pkk5.rosreestr.ru/arcgis/rest/services/Cadastre/CadastreSelected/MapServer/export?",
-				type: "GET",
-				data: urlOptions,
-				success: function (data) {
-					var image = new Image();
-					image.setAttribute("crossOrigin", "anonymous");
-					image.onload = function () {
-						var pathPoints = MSQR(image, {
-							tolerance: 1.5,
-							path2D: true,
-							maxShapes: 25
-						});
-
-						var c = document.createElement("canvas"),
-						    ctx;
-						c.width = image.width;
-						c.height = image.height;
-						ctx = c.getContext("2d");
-						ctx.drawImage(image, 0, 0);
-
-						ctx.fillStyle = "rgb(255, 255, 0)";
-						ctx.beginPath();
-						for (var z = 0; z < pathPoints.length; z++) {
-							if (pathPoints[z].length > 3) {
-								for (var i = 0; i < pathPoints[z].length; i++) {
-									if (i === 0) {
-										ctx.moveTo(pathPoints[z][i].x, pathPoints[z][i].y);
-									} else if (i === pathPoints[z].length) {
-										ctx.lineTo(pathPoints[z][i].x, pathPoints[z][i].y);
-									} else {
-										ctx.lineTo(pathPoints[z][i].x, pathPoints[z][i].y);
-									}
-								}
-							}
-						}
-
-						ctx.rect(0, 0, image.width, image.height);
-						ctx.fill();
-
-						var imgData = ctx.getImageData(0, 0, image.width, image.height);
-						for (var d = 0; d < imgData.data.length; d += 4) {
-							if (imgData.data[d + 3] === 0) {
-								imgData.data[d] = 255;
-								imgData.data[d + 1] = 0;
-								imgData.data[d + 2] = 0;
-								imgData.data[d + 3] = 255;
-							} else {
-								imgData.data[d] = 0;
-								imgData.data[d + 1] = 0;
-								imgData.data[d + 2] = 0;
-								imgData.data[d + 3] = 0;
-							}
-						}
-						ctx.putImageData(imgData, 0, 0);
-
-						var pinPoints = MSQR(ctx, {
-							tolerance: 1.5,
-							path2D: true,
-							maxShapes: 100
-						});
-						var polygons = [];
-						for (var pp = 0; pp < pathPoints.length; pp++) {
-							if (pathPoints[pp].length > 2) polygons.push(pathPoints[pp]);
-						}
-						var holes = [];
-
-						for (var pin = pinPoints.length - 1; pin >= 0; pin--) {
-							if (pinPoints[pin].length > 2) holes.push(pinPoints[pin]);
-						}
-
-						d.resolve(polygons, holes, image.width, image.height, urlOptions.bbox);
-					};
-					image.src = this.url;
-				},
-				error: function (error) {
-					d.reject(" Failed: " + error);
-				}
-			});
-		};
-
-		getDataFromServer();
-		return d.promise();
-	}
-
-	getDataByLocationAsynch(lngLatString) {
-		var d = $.Deferred();
-		getDataFromServer();
-
-		function getDataFromServer() {
-			let random = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-
-			var urlOptions = {
-				text: lngLatString,
-				tolerance: "16",
-				limit: 11,
-				callback: "JQuery" + random() + random()
-			};
-
-			var array = [];
-			this[urlOptions.callback] = function (data) {};
-			$.ajax({
-				url: "https://pkk5.rosreestr.ru/api/features/1?",
-				type: "GET",
-				data: urlOptions,
-				dataType: "jsonp",
-				jsonpCallback: urlOptions.callback,
-				crossDomain: true,
-				success: function (response) {
-					if (response.features.length > 0) {
-						$.each(response.features, function (index, value) {
-							var cords = L.Projection.SphericalMercator.unproject(L.point(value.center.x, value.center.y));
-							array.push({
-								display_name: value.attrs.address,
-								type: "Feature",
-								geojson: {
-									type: "Point",
-									coordinates: [cords[Object.keys(cords)[1]], cords[Object.keys(cords)[0]]]
-								},
-								properties: {
-									address: value.attrs.address,
-									cn: value.attrs.cn,
-									id: value.attrs.id,
-									extent: value.extent,
-									sort: value.sort,
-									type: value.type
-								}
-							});
-						});
-						d.resolve(array);
-					} else {
-						d.resolve([]);
-					}
-				},
-				error: function (error) {
-					d.reject(" Failed: " + error);
-				}
-			});
-		}
-		return d.promise();
-	}
-}
-/* harmony export (immutable) */ __webpack_exports__["b"] = CadastrSearchProviderPPK5;
-
-
-class CadastrSearchPPK5 {
-	constructor(map, options) {
-		this.map = map;
-		this.options = options;
-		this.pkk5Provider = new CadastrSearchProviderPPK5(this.map);
-	}
-
-	getGeoJsonByCadNum(cadNum) {
-		var deferred = $.Deferred();
-		var that = this;
-		this.pkk5Provider.getDataByMaskAsynch(cadNum).then((data, type) => {
-			var requestResult = data;
-			if (type === "withCoords") {
-				var bbox = [data[0].properties.extent.xmin, data[0].properties.extent.ymin, data[0].properties.extent.xmax, data[0].properties.extent.ymax];
-				var strBbox = bbox.join();
-				var bounds = new L.latLngBounds(L.Projection.SphericalMercator.unproject(new L.point(data[0].properties.extent.xmin, data[0].properties.extent.ymax)), L.Projection.SphericalMercator.unproject(new L.point(data[0].properties.extent.xmax, data[0].properties.extent.ymin)));
-
-				var newBoundsNorthEast = that.map.getPixelBounds(bounds._northEast, 18);
-				var newBoundsSouthWest = that.map.getPixelBounds(bounds._southWest, 18);
-				var futureNE = {
-					x: null,
-					y: null
-				};
-				var futureSW = {
-					x: null,
-					y: null
-				};
-				futureNE.x = newBoundsNorthEast.min.x + that.map.getSize().x / 2;
-				futureNE.y = newBoundsNorthEast.min.y + that.map.getSize().y / 2;
-				futureSW.x = newBoundsSouthWest.min.x + that.map.getSize().x / 2;
-				futureSW.y = newBoundsSouthWest.min.y + that.map.getSize().y / 2;
-				var futureHight = futureSW.y - futureNE.y;
-				var futureWidth = futureNE.x - futureSW.x;
-
-				var kW, kH;
-				futureHight / 4096 > 1 ? kH = futureHight / 4096 : kH = 1;
-				futureWidth / 4096 > 1 ? kW = futureWidth / 4096 : kW = 1;
-
-				var d = [kW, kH].sort();
-				var size = [futureWidth / d[1], futureHight / d[1]];
-				var strSize = size.join();
-
-				that.pkk5Provider.getPointsOfImageByMaskAsynch(data[0].properties.id, {
-					bbox3857: strBbox,
-					bboxSR: "3857",
-					imageSR: "3857",
-					size: strSize
-				}).then((data, holes) => {
-					var geometry = {
-						type: "MultiPolygon",
-						coordinates: []
-					};
-					for (var v = 0; v < data.length; v++) {
-						var polygon = [];
-						var exterior = [];
-						for (var m = 0; m < data[v].length; m++) {
-							var point = L.point(data[v][m].x * d[1] + futureSW.x, data[v][m].y * d[1] + futureNE.y);
-							exterior.push([that.map.unproject(point, 18).lng, that.map.unproject(point, 18).lat]);
-						}
-						if (data[v].length > 0) {
-							var lastPoint = L.point(data[v][0].x * d[1] + futureSW.x, data[v][0].y * d[1] + futureNE.y);
-							exterior.push([that.map.unproject(lastPoint, 18).lng, that.map.unproject(lastPoint, 18).lat]);
-						}
-
-						polygon.push(exterior);
-						geometry.coordinates.push(polygon);
-					}
-
-					var arrayOfHoles = [];
-					for (var h = 0; h < holes.length; h++) {
-						var hole = [];
-						for (var hh = 0; hh < holes[h].length; hh++) {
-							var holePoint = L.point(holes[h][hh].x * d[1] + futureSW.x, holes[h][hh].y * d[1] + futureNE.y);
-							hole.push([that.map.unproject(holePoint, 18).lng, that.map.unproject(holePoint, 18).lat]);
-						}
-						if (holes[h].length > 0) {
-							var lastHolePoint = L.point(holes[h][0].x * d[1] + futureSW.x, holes[h][0].y * d[1] + futureNE.y);
-							hole.push([that.map.unproject(lastHolePoint, 18).lng, that.map.unproject(lastHolePoint, 18).lat]);
-						}
-
-						arrayOfHoles.push(hole);
-					}
-
-					//проверка на пересечение
-					//проверяем каждый полигон и каждый бублик на предмет пересечения.
-					if (arrayOfHoles.length > 0) {
-						for (var p = 0; p < geometry.coordinates.length; p++) {
-							for (var ah = 0; ah < arrayOfHoles.length; ah++) {
-								var intersectResult = TDMap.Utils.GeoUtil.intersectionByBBox(arrayOfHoles[ah], geometry.coordinates[p][0], that.map);
-								if (intersectResult) {
-									geometry.coordinates[p].push(arrayOfHoles[ah]);
-								}
-							}
-						}
-					}
-
-					var o = {
-						type: "Feature"
-					};
-					o.geometry = geometry;
-					o.properties = requestResult[0].properties;
-					if (o.properties.util_code === null) o.properties.util_code = 999;
-
-					if (o.properties.fp === null) o.properties.fp = 999;
-
-					if (o.properties.area_unit === null) o.properties.area_unit = 999;
-
-					if (o.properties.cad_unit === null) o.properties.cad_unit = 999;
-
-					if (o.properties.category_type === null) o.properties.category_type = 999;
-
-					if (o.properties.util_code === null) o.properties.util_code = 999;
-
-					if (o.properties.statecd === null) o.properties.statecd = 999;
-					deferred.resolve(o, "withCoords");
-				}, function (err) {
-					deferred.resolve(err, "error");
-				});
-			} else if (type === "withoutCoords") {
-				deferred.resolve(requestResult, "withoutCoords");
-			} else if (type === "noObjects") {
-				deferred.resolve(requestResult, "noObjects");
-			}
-		}, function (err) {
-			deferred.resolve(err, "error");
-		});
-
-		return deferred.promise();
-	}
-
-	getFullListOflngLats(bounds) {
-		var tolerance = this.options.step;
-		var crs = this.options.crs;
-
-		var boundedGeometry = this.getBboxOfPointsArray(bounds);
-		var metricBbox = [];
-
-		metricBbox.push(L.Projection.Mercator.project(new L.LatLng(boundedGeometry[0], boundedGeometry[1])));
-		metricBbox.push(L.Projection.Mercator.project(new L.LatLng(boundedGeometry[2], boundedGeometry[3])));
-
-		var allX = [];
-		var allY = [];
-		var allXY = [];
-		var i = metricBbox[0].x;
-		var j = metricBbox[0].y;
-		do {
-			allX.push(i);
-			i += this.options.step;
-		} while (i < metricBbox[1].x);
-
-		do {
-			allY.push(j);
-			j += this.options.step;
-		} while (j < metricBbox[1].y);
-
-		for (var k = 0; k < allX.length; k++) {
-			for (var l = 0; l < allY.length; l++) {
-				allXY.push([allX[k], allY[l]]);
-			}
-		}
-
-		return allXY;
-	}
-
-	getBboxOfPointsArray(bounds) {
-		var bbox = [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY];
-
-		var arraysOfPointsSort = bounds.reduce(function (prev, coord) {
-			return [Math.min(coord[0], prev[0]), Math.min(coord[1], prev[1]), Math.max(coord[0], prev[2]), Math.max(coord[1], prev[3])];
-		}, bbox);
-
-		return arraysOfPointsSort;
-	}
-
-	getArrayofPointsInsideGeometry(bounds) {
-		var fullList = this.getFullListOflngLats(bounds);
-		var boundedList = [];
-
-		for (var i = 0; i < fullList.length; i++) {
-			var checked = this.checkLngLatString([L.Projection.Mercator.unproject(new L.Point(fullList[i][0], fullList[i][1])).lat, L.Projection.Mercator.unproject(new L.Point(fullList[i][0], fullList[i][1])).lng], bounds);
-			if (checked === true) {
-				boundedList.push([L.Projection.Mercator.unproject(new L.Point(fullList[i][0], fullList[i][1])).lat, L.Projection.Mercator.unproject(new L.Point(fullList[i][0], fullList[i][1])).lng]);
-			}
-		}
-
-		return boundedList;
-	}
-
-	checkLngLatString(pointCoordinates, bboxCoords) {
-		var x = pointCoordinates[0],
-		    y = pointCoordinates[1];
-
-		var inside = false;
-
-		for (var i = 0, j = bboxCoords.length - 1; i < bboxCoords.length; j = i++) {
-			var xi = bboxCoords[i][0],
-			    yi = bboxCoords[i][1];
-			var xj = bboxCoords[j][0],
-			    yj = bboxCoords[j][1];
-
-			var intersect = yi > y !== yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi;
-
-			if (intersect) {
-				inside = !inside;
-			}
-		}
-
-		return inside;
-	}
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = CadastrSearchPPK5;
-
-
-/***/ }),
-/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var __extends = this && this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Promises = exports.Promises = function () {
+    function Promises() {
+        _classCallCheck(this, Promises);
+    }
+
+    _createClass(Promises, [{
+        key: "getPromise",
+        value: function getPromise(url, params) {
+            // для проформы
+            var request = {
+                url: url,
+                type: "GET"
+            };
+
+            if (params) request.params = params;
+
+            return $.get(request);
+        }
+    }]);
+
+    return Promises;
+}();
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __extends = undefined && undefined.__extends || function (d, b) {
+    for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+    }function __() {
         this.constructor = d;
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Observable_1 = __webpack_require__(7);
+var Observable_1 = __webpack_require__(6);
 var Subscriber_1 = __webpack_require__(1);
 var Subscription_1 = __webpack_require__(2);
-var ObjectUnsubscribedError_1 = __webpack_require__(11);
+var ObjectUnsubscribedError_1 = __webpack_require__(10);
 var SubjectSubscription_1 = __webpack_require__(31);
 var rxSubscriber_1 = __webpack_require__(3);
 /**
@@ -1221,7 +794,7 @@ exports.AnonymousSubject = AnonymousSubject;
 //# sourceMappingURL=Subject.js.map
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1533,7 +1106,7 @@ exports.Observable = Observable;
 //# sourceMappingURL=Observable.js.map
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1546,7 +1119,7 @@ exports.isFunction = isFunction;
 //# sourceMappingURL=isFunction.js.map
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1557,7 +1130,7 @@ exports.errorObject = { e: {} };
 //# sourceMappingURL=errorObject.js.map
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1565,24 +1138,25 @@ exports.errorObject = { e: {} };
 
 exports.empty = {
     closed: true,
-    next: function (value) {},
-    error: function (err) {
+    next: function next(value) {},
+    error: function error(err) {
         throw err;
     },
-    complete: function () {}
+    complete: function complete() {}
 };
 //# sourceMappingURL=Observer.js.map
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var __extends = this && this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() {
+var __extends = undefined && undefined.__extends || function (d, b) {
+    for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+    }function __() {
         this.constructor = d;
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -1610,32 +1184,49 @@ exports.ObjectUnsubscribedError = ObjectUnsubscribedError;
 //# sourceMappingURL=ObjectUnsubscribedError.js.map
 
 /***/ }),
-/* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TDMap", function() { return TDMap; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TDMapManager", function() { return TDMapManager; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_TDMap_Utils_GeoUtil_js__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_TDMap_Utils_Promises_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_TDMap_Utils_rosreesrtParse_js__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__tools_TDMap_Tools_Measurment_js__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__tools_TDMap_Tools_SpatialFilter_js__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__routing_TDMap_Routing_Router_js__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__providers_TDMap_Provider_GeoJSONProvider_TDMap_Service_GeoJSONService_js__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__providers_TDMap_Provider_GoogleProvider_js__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__providers_TDMap_Provider_YandexProvider_js__ = __webpack_require__(37);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__providers_TDMap_Provider_RosreestrProvider_js__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__mapping_TDMap_Mapping_Manager_js__ = __webpack_require__(39);
-// utils
 
 
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.TDMapManager = exports.TDMap = undefined;
 
+var _TDMapUtilsGeoUtil = __webpack_require__(12);
+
+var _TDMapUtilsPromises = __webpack_require__(4);
+
+var _TDMapUtilsRosreesrtParse = __webpack_require__(13);
+
+var _TDMapToolsMeasurment = __webpack_require__(14);
+
+var _TDMapToolsSpatialFilter = __webpack_require__(15);
+
+var _TDMapToolsPulseMarker = __webpack_require__(40);
+
+var _TDMapRoutingRouter = __webpack_require__(16);
+
+var _TDMapServiceGeoJSONService = __webpack_require__(19);
+
+var _TDMapProviderGoogleProvider = __webpack_require__(36);
+
+var _TDMapProviderYandexProvider = __webpack_require__(37);
+
+var _TDMapProviderRosreestrProvider = __webpack_require__(38);
+
+var _TDMapMappingManager = __webpack_require__(39);
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } // utils
 
 
 // tools
-
 
 
 // routing
@@ -1647,39 +1238,38 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // layers
 
 
-
-
 // complete
-class TDMapConstructor {
-	constructor() {
-		this.Service = {
-			GeoJSONService: __WEBPACK_IMPORTED_MODULE_6__providers_TDMap_Provider_GeoJSONProvider_TDMap_Service_GeoJSONService_js__["a" /* GeoJSONService */]
-		};
-		this.Layers = {
-			GoogleProvider: __WEBPACK_IMPORTED_MODULE_7__providers_TDMap_Provider_GoogleProvider_js__["a" /* GoogleProvider */],
-			YandexProvider: __WEBPACK_IMPORTED_MODULE_8__providers_TDMap_Provider_YandexProvider_js__["a" /* YandexProvider */],
-			RosreestrProvider: __WEBPACK_IMPORTED_MODULE_9__providers_TDMap_Provider_RosreestrProvider_js__["a" /* RosreestrProvider */]
-		};
-		this.Tools = {
-			MeasurmentUtils: __WEBPACK_IMPORTED_MODULE_3__tools_TDMap_Tools_Measurment_js__["b" /* MeasurmentUtils */],
-			Measurment: __WEBPACK_IMPORTED_MODULE_3__tools_TDMap_Tools_Measurment_js__["a" /* Measurment */],
-			SpatialFilterUtils: __WEBPACK_IMPORTED_MODULE_4__tools_TDMap_Tools_SpatialFilter_js__["b" /* SpatialFilterUtils */],
-			SpatialFilter: __WEBPACK_IMPORTED_MODULE_4__tools_TDMap_Tools_SpatialFilter_js__["a" /* SpatialFilter */]
-		};
-		this.Utils = {
-			GeoUtil: __WEBPACK_IMPORTED_MODULE_0__utils_TDMap_Utils_GeoUtil_js__["a" /* GeoUtil */],
-			Promises: __WEBPACK_IMPORTED_MODULE_1__utils_TDMap_Utils_Promises_js__["a" /* Promises */],
-			CadastrSearchProviderPPK5: __WEBPACK_IMPORTED_MODULE_2__utils_TDMap_Utils_rosreesrtParse_js__["b" /* CadastrSearchProviderPPK5 */],
-			CadastrSearchPPK5: __WEBPACK_IMPORTED_MODULE_2__utils_TDMap_Utils_rosreesrtParse_js__["a" /* CadastrSearchPPK5 */]
-		};
-		this.Routing = __WEBPACK_IMPORTED_MODULE_5__routing_TDMap_Routing_Router_js__["a" /* Routing */];
-	}
-}
+var TDMapConstructor = function TDMapConstructor() {
+	_classCallCheck(this, TDMapConstructor);
 
-var TDMap = new TDMapConstructor();
+	this.Service = {
+		GeoJSONService: _TDMapServiceGeoJSONService.GeoJSONService
+	};
+	this.Layers = {
+		GoogleProvider: _TDMapProviderGoogleProvider.GoogleProvider,
+		YandexProvider: _TDMapProviderYandexProvider.YandexProvider,
+		RosreestrProvider: _TDMapProviderRosreestrProvider.RosreestrProvider
+	};
+	this.Tools = {
+		MeasurmentUtils: _TDMapToolsMeasurment.MeasurmentUtils,
+		Measurment: _TDMapToolsMeasurment.Measurment,
+		SpatialFilterUtils: _TDMapToolsSpatialFilter.SpatialFilterUtils,
+		SpatialFilter: _TDMapToolsSpatialFilter.SpatialFilter,
+		IconPulse: _TDMapToolsPulseMarker.IconPulse,
+		PulseMarker: _TDMapToolsPulseMarker.PulseMarker
+	};
+	this.Utils = {
+		GeoUtil: _TDMapUtilsGeoUtil.GeoUtil,
+		Promises: _TDMapUtilsPromises.Promises,
+		CadastrSearchProviderPPK5: _TDMapUtilsRosreesrtParse.CadastrSearchProviderPPK5,
+		CadastrSearchPPK5: _TDMapUtilsRosreesrtParse.CadastrSearchPPK5
+	};
+	this.Routing = _TDMapRoutingRouter.Routing;
+};
 
+var TDMap = exports.TDMap = new TDMapConstructor();
+window.TDMap = TDMap;
 // manager 
-
 
 /*
  	params {
@@ -1691,23 +1281,34 @@ var TDMap = new TDMapConstructor();
 		memorize: boolean
 	}
 */
-class TDMapManagerConstructor extends __WEBPACK_IMPORTED_MODULE_10__mapping_TDMap_Mapping_Manager_js__["a" /* Manager */] {
-	constructor(params) {
-		super(params);
-	}
-}
+var TDMapManagerConstructor = function (_Manager) {
+	_inherits(TDMapManagerConstructor, _Manager);
 
-var TDMapManager = TDMapManagerConstructor;
+	function TDMapManagerConstructor(params) {
+		_classCallCheck(this, TDMapManagerConstructor);
+
+		return _possibleConstructorReturn(this, (TDMapManagerConstructor.__proto__ || Object.getPrototypeOf(TDMapManagerConstructor)).call(this, params));
+	}
+
+	return TDMapManagerConstructor;
+}(_TDMapMappingManager.Manager);
+
+var TDMapManager = exports.TDMapManager = TDMapManagerConstructor;
+window.TDMapManager = TDMapManager;
 
 /***/ }),
-/* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return GeoUtil; });
-var GeoUtil = L.Util.extend({
 
-    intersectionByBBox: function (hole, polygon, map) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var GeoUtil = exports.GeoUtil = L.Util.extend({
+
+    intersectionByBBox: function intersectionByBBox(hole, polygon, map) {
         this.map = map;
         var that = this;
         var result = this.parseResult(this.isMultiPointInsideBBox(hole, polygon));
@@ -1718,7 +1319,7 @@ var GeoUtil = L.Util.extend({
         }
     },
 
-    isMultiPointInsideBBox: function (coordinates, bboxCoords) {
+    isMultiPointInsideBBox: function isMultiPointInsideBBox(coordinates, bboxCoords) {
         var arrayOfResults = [];
         for (var i = 0; i < coordinates.length; i++) {
             arrayOfResults.push(this.pointIntersectionMath(coordinates[i], bboxCoords));
@@ -1726,7 +1327,7 @@ var GeoUtil = L.Util.extend({
         return arrayOfResults;
     },
 
-    pointIntersectionMath: function (pointCoordinates, bboxCoords) {
+    pointIntersectionMath: function pointIntersectionMath(pointCoordinates, bboxCoords) {
         var x = pointCoordinates[0],
             y = pointCoordinates[1];
         var inside = false;
@@ -1743,7 +1344,7 @@ var GeoUtil = L.Util.extend({
         return inside;
     },
 
-    parseResult: function (result) {
+    parseResult: function parseResult(result) {
         if (result === true && typeof result === "boolean") {
             return "within";
         } else if (result === false && typeof result === "boolean") {
@@ -1762,13 +1363,496 @@ var GeoUtil = L.Util.extend({
 });
 
 /***/ }),
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return MeasurmentUtils; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Measurment; });
-var MeasurmentUtils = {};
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var CadastrSearchProviderPPK5 = exports.CadastrSearchProviderPPK5 = function () {
+	function CadastrSearchProviderPPK5(map) {
+		_classCallCheck(this, CadastrSearchProviderPPK5);
+
+		this.map = map;
+	}
+
+	_createClass(CadastrSearchProviderPPK5, [{
+		key: "getDataByMask",
+		value: function getDataByMask(cadnum) {}
+	}, {
+		key: "getDataByMaskAsynch",
+		value: function getDataByMaskAsynch(cadnum) {
+			var d = $.Deferred();
+			getDataFromServer();
+
+			function getDataFromServer() {
+				function random() {
+					return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+				}
+
+				var urlOptions = {
+					text: cadnum,
+					tolerance: "16391",
+					limit: 16,
+					callback: "JQuery" + random() + random()
+				};
+
+				var array = [];
+				var arrayWithOutCords = [];
+				this[urlOptions.callback] = function (data) {};
+				var text = Number(cadnum.split(":")[0]).toString() + ":" + Number(cadnum.split(":")[1]).toString() + ":" + Number(cadnum.split(":")[2]).toString() + ":" + Number(cadnum.split(":")[3]).toString();
+				$.ajax({
+					url: "https://pkk5.rosreestr.ru/api/features/1/" + text,
+					type: "GET",
+					dataType: "jsonp",
+					success: function success(response) {
+						if (response.feature !== undefined && response.feature !== null) {
+							if (response.feature.center && response.feature.extent) {
+								var cords = L.Projection.SphericalMercator.unproject(L.point(response.feature.center.x, response.feature.center.y));
+								var obj = {
+									type: "Feature",
+									geojson: {
+										type: "Point",
+										coordinates: [cords[Object.keys(cords)[1]], cords[Object.keys(cords)[0]]]
+									}
+								};
+								obj.properties = response.feature.attrs;
+								obj.properties.extent = response.feature.extent;
+								obj.properties.center = response.feature.center;
+								array.push(obj);
+								d.resolve(array, "withCoords");
+							} else {
+								arrayWithOutCords.push({
+									type: "Feature",
+									properties: {
+										cn: response.feature.attrs.cn,
+										id: response.feature.attrs.id
+									}
+								});
+								d.resolve(arrayWithOutCords, "withoutCoords");
+							}
+						} else {
+							d.resolve([], "noObjects");
+						}
+					},
+					error: function error(_error) {
+						d.reject(" Failed: " + _error);
+					}
+				});
+			}
+			return d.promise();
+		}
+	}, {
+		key: "getPointsOfImageByMaskAsynch",
+		value: function getPointsOfImageByMaskAsynch(cadnum, options) {
+			var d = $.Deferred();
+			var getDataFromServer = function getDataFromServer() {
+				var urlOptions = {
+					dpi: "96",
+					transparent: "true",
+					format: "png32",
+					layers: "show:6,7",
+					bbox: options.bbox3857,
+					bboxSR: options.bboxSR,
+					imageSR: options.imageSR,
+					size: options.size,
+					layerDefs: JSON.stringify({
+						"6": "ID = '" + cadnum + "'",
+						"7": "ID = '" + cadnum + "'"
+					}),
+					f: "image"
+				};
+				var pstr = L.Util.getParamString(urlOptions);
+				$.ajax({
+					url: "http://pkk5.rosreestr.ru/arcgis/rest/services/Cadastre/CadastreSelected/MapServer/export?",
+					type: "GET",
+					data: urlOptions,
+					success: function success(data) {
+						var image = new Image();
+						image.setAttribute("crossOrigin", "anonymous");
+						image.onload = function () {
+							var pathPoints = MSQR(image, {
+								tolerance: 1.5,
+								path2D: true,
+								maxShapes: 25
+							});
+
+							var c = document.createElement("canvas"),
+							    ctx;
+							c.width = image.width;
+							c.height = image.height;
+							ctx = c.getContext("2d");
+							ctx.drawImage(image, 0, 0);
+
+							ctx.fillStyle = "rgb(255, 255, 0)";
+							ctx.beginPath();
+							for (var z = 0; z < pathPoints.length; z++) {
+								if (pathPoints[z].length > 3) {
+									for (var i = 0; i < pathPoints[z].length; i++) {
+										if (i === 0) {
+											ctx.moveTo(pathPoints[z][i].x, pathPoints[z][i].y);
+										} else if (i === pathPoints[z].length) {
+											ctx.lineTo(pathPoints[z][i].x, pathPoints[z][i].y);
+										} else {
+											ctx.lineTo(pathPoints[z][i].x, pathPoints[z][i].y);
+										}
+									}
+								}
+							}
+
+							ctx.rect(0, 0, image.width, image.height);
+							ctx.fill();
+
+							var imgData = ctx.getImageData(0, 0, image.width, image.height);
+							for (var d = 0; d < imgData.data.length; d += 4) {
+								if (imgData.data[d + 3] === 0) {
+									imgData.data[d] = 255;
+									imgData.data[d + 1] = 0;
+									imgData.data[d + 2] = 0;
+									imgData.data[d + 3] = 255;
+								} else {
+									imgData.data[d] = 0;
+									imgData.data[d + 1] = 0;
+									imgData.data[d + 2] = 0;
+									imgData.data[d + 3] = 0;
+								}
+							}
+							ctx.putImageData(imgData, 0, 0);
+
+							var pinPoints = MSQR(ctx, {
+								tolerance: 1.5,
+								path2D: true,
+								maxShapes: 100
+							});
+							var polygons = [];
+							for (var pp = 0; pp < pathPoints.length; pp++) {
+								if (pathPoints[pp].length > 2) polygons.push(pathPoints[pp]);
+							}
+							var holes = [];
+
+							for (var pin = pinPoints.length - 1; pin >= 0; pin--) {
+								if (pinPoints[pin].length > 2) holes.push(pinPoints[pin]);
+							}
+
+							d.resolve(polygons, holes, image.width, image.height, urlOptions.bbox);
+						};
+						image.src = this.url;
+					},
+					error: function error(_error2) {
+						d.reject(" Failed: " + _error2);
+					}
+				});
+			};
+
+			getDataFromServer();
+			return d.promise();
+		}
+	}, {
+		key: "getDataByLocationAsynch",
+		value: function getDataByLocationAsynch(lngLatString) {
+			var d = $.Deferred();
+			getDataFromServer();
+
+			function getDataFromServer() {
+				var random = function random() {
+					return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+				};
+
+				var urlOptions = {
+					text: lngLatString,
+					tolerance: "16",
+					limit: 11,
+					callback: "JQuery" + random() + random()
+				};
+
+				var array = [];
+				this[urlOptions.callback] = function (data) {};
+				$.ajax({
+					url: "https://pkk5.rosreestr.ru/api/features/1?",
+					type: "GET",
+					data: urlOptions,
+					dataType: "jsonp",
+					jsonpCallback: urlOptions.callback,
+					crossDomain: true,
+					success: function success(response) {
+						if (response.features.length > 0) {
+							$.each(response.features, function (index, value) {
+								var cords = L.Projection.SphericalMercator.unproject(L.point(value.center.x, value.center.y));
+								array.push({
+									display_name: value.attrs.address,
+									type: "Feature",
+									geojson: {
+										type: "Point",
+										coordinates: [cords[Object.keys(cords)[1]], cords[Object.keys(cords)[0]]]
+									},
+									properties: {
+										address: value.attrs.address,
+										cn: value.attrs.cn,
+										id: value.attrs.id,
+										extent: value.extent,
+										sort: value.sort,
+										type: value.type
+									}
+								});
+							});
+							d.resolve(array);
+						} else {
+							d.resolve([]);
+						}
+					},
+					error: function error(_error3) {
+						d.reject(" Failed: " + _error3);
+					}
+				});
+			}
+			return d.promise();
+		}
+	}]);
+
+	return CadastrSearchProviderPPK5;
+}();
+
+var CadastrSearchPPK5 = exports.CadastrSearchPPK5 = function () {
+	function CadastrSearchPPK5(map, options) {
+		_classCallCheck(this, CadastrSearchPPK5);
+
+		this.map = map;
+		this.options = options;
+		this.pkk5Provider = new CadastrSearchProviderPPK5(this.map);
+	}
+
+	_createClass(CadastrSearchPPK5, [{
+		key: "getGeoJsonByCadNum",
+		value: function getGeoJsonByCadNum(cadNum) {
+			var deferred = $.Deferred();
+			var that = this;
+			this.pkk5Provider.getDataByMaskAsynch(cadNum).then(function (data, type) {
+				var requestResult = data;
+				if (type === "withCoords") {
+					var bbox = [data[0].properties.extent.xmin, data[0].properties.extent.ymin, data[0].properties.extent.xmax, data[0].properties.extent.ymax];
+					var strBbox = bbox.join();
+					var bounds = new L.latLngBounds(L.Projection.SphericalMercator.unproject(new L.point(data[0].properties.extent.xmin, data[0].properties.extent.ymax)), L.Projection.SphericalMercator.unproject(new L.point(data[0].properties.extent.xmax, data[0].properties.extent.ymin)));
+
+					var newBoundsNorthEast = that.map.getPixelBounds(bounds._northEast, 18);
+					var newBoundsSouthWest = that.map.getPixelBounds(bounds._southWest, 18);
+					var futureNE = {
+						x: null,
+						y: null
+					};
+					var futureSW = {
+						x: null,
+						y: null
+					};
+					futureNE.x = newBoundsNorthEast.min.x + that.map.getSize().x / 2;
+					futureNE.y = newBoundsNorthEast.min.y + that.map.getSize().y / 2;
+					futureSW.x = newBoundsSouthWest.min.x + that.map.getSize().x / 2;
+					futureSW.y = newBoundsSouthWest.min.y + that.map.getSize().y / 2;
+					var futureHight = futureSW.y - futureNE.y;
+					var futureWidth = futureNE.x - futureSW.x;
+
+					var kW, kH;
+					futureHight / 4096 > 1 ? kH = futureHight / 4096 : kH = 1;
+					futureWidth / 4096 > 1 ? kW = futureWidth / 4096 : kW = 1;
+
+					var d = [kW, kH].sort();
+					var size = [futureWidth / d[1], futureHight / d[1]];
+					var strSize = size.join();
+
+					that.pkk5Provider.getPointsOfImageByMaskAsynch(data[0].properties.id, {
+						bbox3857: strBbox,
+						bboxSR: "3857",
+						imageSR: "3857",
+						size: strSize
+					}).then(function (data, holes) {
+						var geometry = {
+							type: "MultiPolygon",
+							coordinates: []
+						};
+						for (var v = 0; v < data.length; v++) {
+							var polygon = [];
+							var exterior = [];
+							for (var m = 0; m < data[v].length; m++) {
+								var point = L.point(data[v][m].x * d[1] + futureSW.x, data[v][m].y * d[1] + futureNE.y);
+								exterior.push([that.map.unproject(point, 18).lng, that.map.unproject(point, 18).lat]);
+							}
+							if (data[v].length > 0) {
+								var lastPoint = L.point(data[v][0].x * d[1] + futureSW.x, data[v][0].y * d[1] + futureNE.y);
+								exterior.push([that.map.unproject(lastPoint, 18).lng, that.map.unproject(lastPoint, 18).lat]);
+							}
+
+							polygon.push(exterior);
+							geometry.coordinates.push(polygon);
+						}
+
+						var arrayOfHoles = [];
+						for (var h = 0; h < holes.length; h++) {
+							var hole = [];
+							for (var hh = 0; hh < holes[h].length; hh++) {
+								var holePoint = L.point(holes[h][hh].x * d[1] + futureSW.x, holes[h][hh].y * d[1] + futureNE.y);
+								hole.push([that.map.unproject(holePoint, 18).lng, that.map.unproject(holePoint, 18).lat]);
+							}
+							if (holes[h].length > 0) {
+								var lastHolePoint = L.point(holes[h][0].x * d[1] + futureSW.x, holes[h][0].y * d[1] + futureNE.y);
+								hole.push([that.map.unproject(lastHolePoint, 18).lng, that.map.unproject(lastHolePoint, 18).lat]);
+							}
+
+							arrayOfHoles.push(hole);
+						}
+
+						//проверка на пересечение
+						//проверяем каждый полигон и каждый бублик на предмет пересечения.
+						if (arrayOfHoles.length > 0) {
+							for (var p = 0; p < geometry.coordinates.length; p++) {
+								for (var ah = 0; ah < arrayOfHoles.length; ah++) {
+									var intersectResult = TDMap.Utils.GeoUtil.intersectionByBBox(arrayOfHoles[ah], geometry.coordinates[p][0], that.map);
+									if (intersectResult) {
+										geometry.coordinates[p].push(arrayOfHoles[ah]);
+									}
+								}
+							}
+						}
+
+						var o = {
+							type: "Feature"
+						};
+						o.geometry = geometry;
+						o.properties = requestResult[0].properties;
+						if (o.properties.util_code === null) o.properties.util_code = 999;
+
+						if (o.properties.fp === null) o.properties.fp = 999;
+
+						if (o.properties.area_unit === null) o.properties.area_unit = 999;
+
+						if (o.properties.cad_unit === null) o.properties.cad_unit = 999;
+
+						if (o.properties.category_type === null) o.properties.category_type = 999;
+
+						if (o.properties.util_code === null) o.properties.util_code = 999;
+
+						if (o.properties.statecd === null) o.properties.statecd = 999;
+						deferred.resolve(o, "withCoords");
+					}, function (err) {
+						deferred.resolve(err, "error");
+					});
+				} else if (type === "withoutCoords") {
+					deferred.resolve(requestResult, "withoutCoords");
+				} else if (type === "noObjects") {
+					deferred.resolve(requestResult, "noObjects");
+				}
+			}, function (err) {
+				deferred.resolve(err, "error");
+			});
+
+			return deferred.promise();
+		}
+	}, {
+		key: "getFullListOflngLats",
+		value: function getFullListOflngLats(bounds) {
+			var tolerance = this.options.step;
+			var crs = this.options.crs;
+
+			var boundedGeometry = this.getBboxOfPointsArray(bounds);
+			var metricBbox = [];
+
+			metricBbox.push(L.Projection.Mercator.project(new L.LatLng(boundedGeometry[0], boundedGeometry[1])));
+			metricBbox.push(L.Projection.Mercator.project(new L.LatLng(boundedGeometry[2], boundedGeometry[3])));
+
+			var allX = [];
+			var allY = [];
+			var allXY = [];
+			var i = metricBbox[0].x;
+			var j = metricBbox[0].y;
+			do {
+				allX.push(i);
+				i += this.options.step;
+			} while (i < metricBbox[1].x);
+
+			do {
+				allY.push(j);
+				j += this.options.step;
+			} while (j < metricBbox[1].y);
+
+			for (var k = 0; k < allX.length; k++) {
+				for (var l = 0; l < allY.length; l++) {
+					allXY.push([allX[k], allY[l]]);
+				}
+			}
+
+			return allXY;
+		}
+	}, {
+		key: "getBboxOfPointsArray",
+		value: function getBboxOfPointsArray(bounds) {
+			var bbox = [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY];
+
+			var arraysOfPointsSort = bounds.reduce(function (prev, coord) {
+				return [Math.min(coord[0], prev[0]), Math.min(coord[1], prev[1]), Math.max(coord[0], prev[2]), Math.max(coord[1], prev[3])];
+			}, bbox);
+
+			return arraysOfPointsSort;
+		}
+	}, {
+		key: "getArrayofPointsInsideGeometry",
+		value: function getArrayofPointsInsideGeometry(bounds) {
+			var fullList = this.getFullListOflngLats(bounds);
+			var boundedList = [];
+
+			for (var i = 0; i < fullList.length; i++) {
+				var checked = this.checkLngLatString([L.Projection.Mercator.unproject(new L.Point(fullList[i][0], fullList[i][1])).lat, L.Projection.Mercator.unproject(new L.Point(fullList[i][0], fullList[i][1])).lng], bounds);
+				if (checked === true) {
+					boundedList.push([L.Projection.Mercator.unproject(new L.Point(fullList[i][0], fullList[i][1])).lat, L.Projection.Mercator.unproject(new L.Point(fullList[i][0], fullList[i][1])).lng]);
+				}
+			}
+
+			return boundedList;
+		}
+	}, {
+		key: "checkLngLatString",
+		value: function checkLngLatString(pointCoordinates, bboxCoords) {
+			var x = pointCoordinates[0],
+			    y = pointCoordinates[1];
+
+			var inside = false;
+
+			for (var i = 0, j = bboxCoords.length - 1; i < bboxCoords.length; j = i++) {
+				var xi = bboxCoords[i][0],
+				    yi = bboxCoords[i][1];
+				var xj = bboxCoords[j][0],
+				    yj = bboxCoords[j][1];
+
+				var intersect = yi > y !== yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi;
+
+				if (intersect) {
+					inside = !inside;
+				}
+			}
+
+			return inside;
+		}
+	}]);
+
+	return CadastrSearchPPK5;
+}();
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var MeasurmentUtils = exports.MeasurmentUtils = {};
 
 MeasurmentUtils.MeasureLine = L.Polyline.extend({
     options: {
@@ -1785,15 +1869,15 @@ MeasurmentUtils.MeasureVertex = L.Editable.VertexMarker.extend({
     options: {
         className: 'leaflet-div-icon leaflet-editing-icon measurment-edge'
     },
-    onAdd: function (map) {
+    onAdd: function onAdd(map) {
         L.Editable.VertexMarker.prototype.onAdd.call(this, map);
         this.on('mouseover', this.mouseover);
         this.on('mouseout', this.mouseout);
     },
-    mouseover: function (e) {
+    mouseover: function mouseover(e) {
         this.editor.fireAndForward('editable:vertex:mouseover', e);
     },
-    mouseout: function (e) {
+    mouseout: function mouseout(e) {
         this.editor.fireAndForward('editable:vertex:mouseout', e);
     }
 });
@@ -1802,23 +1886,23 @@ MeasurmentUtils.MeasureMiddleVertex = L.Editable.MiddleMarker.extend({
     options: {
         className: 'leaflet-div-icon leaflet-editing-icon measurment-middleEdge'
     },
-    onAdd: function (map) {
+    onAdd: function onAdd(map) {
         L.Editable.MiddleMarker.prototype.onAdd.call(this, map);
         this.on('mouseover', this.mouseover);
         this.on('mouseout', this.mouseout);
     },
-    mouseover: function (e) {
+    mouseover: function mouseover(e) {
         e.left = this.left;
         e.right = this.right;
         this.editor.fireAndForward('editable:middlemarker:mouseover', e);
     },
-    mouseout: function (e) {
+    mouseout: function mouseout(e) {
         e.middleMarkerId = this._leaflet_id;
         this.editor.fireAndForward('editable:middlemarker:mouseout', e);
     }
 });
 
-var Measurment = L.Editable.extend({
+var Measurment = exports.Measurment = L.Editable.extend({
     options: {
         vertexMarkerClass: MeasurmentUtils.MeasureVertex,
         polylineClass: MeasurmentUtils.MeasureLine,
@@ -1829,7 +1913,7 @@ var Measurment = L.Editable.extend({
         }
     },
 
-    initialize: function (map, options) {
+    initialize: function initialize(map, options) {
         L.Editable.prototype.initialize.call(this, map);
         L.setOptions(this, options);
         map.measureTools = this;
@@ -1847,7 +1931,7 @@ var Measurment = L.Editable.extend({
         }, this);
     },
 
-    disableMapZoom: function () {
+    disableMapZoom: function disableMapZoom() {
         if (this.map.doubleClickZoom) {
             this.map.doubleClickZoom.disable();
         }
@@ -1856,7 +1940,7 @@ var Measurment = L.Editable.extend({
         }
     },
 
-    enableMapZoom: function () {
+    enableMapZoom: function enableMapZoom() {
         if (!this.map.doubleClickZoom) {
             this.map.doubleClickZoom.enable();
         }
@@ -1865,7 +1949,7 @@ var Measurment = L.Editable.extend({
         }
     },
 
-    abortDrawing: function () {
+    abortDrawing: function abortDrawing() {
         this.off('editable:vertex:mouseover editable:vertex:mouseout editable:middlemarker:mouseover editable:middlemarker:mouseout editable:vertex:drag editable:vertex:dragend editable:drawing:move', this.preMeasureCookLayer);
         this.off('editable:vertex:drag editable:vertex:dragend editable:drawing:move editable:vertex:mouseover editable:vertex:mouseout editable:middlemarker:mouseout', this.preMeasureCookLayer);
         this.off('editable:drawing:end', this.dravingLineEnd);
@@ -1874,7 +1958,7 @@ var Measurment = L.Editable.extend({
         this.stopDrawing();
     },
 
-    startPolylineMeasure: function () {
+    startPolylineMeasure: function startPolylineMeasure() {
         var that = this;
         this.disableMapZoom();
         this.on('editable:vertex:mouseover editable:vertex:mouseout editable:middlemarker:mouseover editable:middlemarker:mouseout editable:vertex:drag editable:vertex:dragend editable:drawing:move', this.preMeasureCookLayer);
@@ -1882,14 +1966,14 @@ var Measurment = L.Editable.extend({
         L.Editable.prototype.startPolyline.call(this);
     },
 
-    dravingLineEnd: function (e) {
+    dravingLineEnd: function dravingLineEnd(e) {
         this.off('editable:drawing:move', this.preMeasureCookLayer);
         this.preMeasureCookLayer(e);
         this.enableMapZoom();
         this.map.on('zoomend', this.dravingZoomEnd);
     },
 
-    startPolygonMeasure: function () {
+    startPolygonMeasure: function startPolygonMeasure() {
         var that = this;
         this.disableMapZoom();
         this.on('editable:vertex:drag editable:vertex:dragend editable:drawing:move editable:vertex:mouseover editable:vertex:mouseout editable:middlemarker:mouseout', this.preMeasureCookLayer);
@@ -1897,7 +1981,7 @@ var Measurment = L.Editable.extend({
         L.Editable.prototype.startPolygon.call(this);
     },
 
-    dravingPolygonEnd: function (e) {
+    dravingPolygonEnd: function dravingPolygonEnd(e) {
         var that = this;
         that.off('editable:drawing:move', that.preMeasureCookLayer);
         that.preMeasureCookLayer(e);
@@ -1906,7 +1990,7 @@ var Measurment = L.Editable.extend({
         that.on('editable:middlemarker:mouseover', that.preMeasureCookLineLayer);
     },
 
-    dravingZoomEnd: function (e) {
+    dravingZoomEnd: function dravingZoomEnd(e) {
         for (var o in e.target.measureTools.featuresLayer._layers) {
             e.layer = e.target.measureTools.featuresLayer._layers[o];
             if (e.layer.toGeoJSON().geometry.type === 'Polygon') {
@@ -1917,7 +2001,7 @@ var Measurment = L.Editable.extend({
         }
     },
 
-    preMeasureCookLayer: function (e) {
+    preMeasureCookLayer: function preMeasureCookLayer(e) {
         var layer = e.layer || e.target;
         if (layer.toGeoJSON().geometry.type === 'Polygon') {
             if (e.target.measureTools) {
@@ -1934,7 +2018,7 @@ var Measurment = L.Editable.extend({
         }
     },
 
-    preMeasureCookLineLayer: function (e) {
+    preMeasureCookLineLayer: function preMeasureCookLineLayer(e) {
         var layer = e.layer;
         var latlngs = this._getLineLatLngs(layer);
         var newlatLngsArray = [];
@@ -1991,7 +2075,7 @@ var Measurment = L.Editable.extend({
         }
     },
 
-    preMeasureCookPolygonLayer: function (e) {
+    preMeasureCookPolygonLayer: function preMeasureCookPolygonLayer(e) {
         var that = this;
         var layer = e.layer || e.target;
         var latlngs = this._getLineLatLngs(layer);
@@ -2051,15 +2135,15 @@ var Measurment = L.Editable.extend({
         }
     },
 
-    _getLineLatLngs: function (layer) {
+    _getLineLatLngs: function _getLineLatLngs(layer) {
         return layer.editor.getLatLngs();
     },
 
-    getDistance: function (e) {
+    getDistance: function getDistance(e) {
         return e.latlng1.distanceTo(e.latlng2);
     },
 
-    _getPerimeter: function (latlngs) {
+    _getPerimeter: function _getPerimeter(latlngs) {
         var distance = 0;
         var currentInc = 0;
         for (var i = 1; i < latlngs.length; i++) {
@@ -2075,12 +2159,12 @@ var Measurment = L.Editable.extend({
         return this.readableDistance(distance);
     },
 
-    getArea: function (latlngs) {
+    getArea: function getArea(latlngs) {
         var area = parseFloat(this.geodesicArea(latlngs));
         return this.readableArea(area);
     },
 
-    geodesicArea: function (latLngs) {
+    geodesicArea: function geodesicArea(latLngs) {
         var DEG_TO_RAD = 0.017453292519943295;
         var pointsCount = latLngs.length,
             area = 0.0,
@@ -2100,7 +2184,7 @@ var Measurment = L.Editable.extend({
         return Math.abs(area);
     },
 
-    readableDistance: function (distance) {
+    readableDistance: function readableDistance(distance) {
         var distanceStr;
         if (distance > 10000) {
             distanceStr = L.Util.template('{distance} км', {
@@ -2114,7 +2198,7 @@ var Measurment = L.Editable.extend({
         return distanceStr;
     },
 
-    readableArea: function (area) {
+    readableArea: function readableArea(area) {
         var areaStr;
         var metAreaStr = L.Util.template('{area} м\xB2', {
             area: area.toFixed(0)
@@ -2138,7 +2222,7 @@ var Measurment = L.Editable.extend({
         return areaStr;
     },
 
-    createMouseMoveLabel: function (obj, screenCords, id) {
+    createMouseMoveLabel: function createMouseMoveLabel(obj, screenCords, id) {
         var measurment;
         var dxShift = 0;
         var dyShift = 0;
@@ -2200,23 +2284,26 @@ var Measurment = L.Editable.extend({
         rectangle.attr("class", "leaflet-measure-label-rectangle").attr("width", rectangleWidth + 5).attr("height", rectangleHeight).attr("x", bbox.x - 5).attr("y", bbox.y - 1).style("fill", "white").style("fill-opacity", 0.5).style("stroke", "#3f51b5").style("stroke-width", "1px").style("stroke-opacity", 1);
     },
 
-    removeLabel: function (type) {
+    removeLabel: function removeLabel(type) {
         var elem = $('.measurment' + type).remove();
     },
 
-    checkAndClearAllLabels: function () {
+    checkAndClearAllLabels: function checkAndClearAllLabels() {
         $("[class^='measurment']").remove();
     }
 });
 
 /***/ }),
 /* 15 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return SpatialFilterUtils; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SpatialFilter; });
-var SpatialFilterUtils = {};
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+var SpatialFilterUtils = exports.SpatialFilterUtils = {};
 
 SpatialFilterUtils.SpatialFilterPolygon = L.Polygon.extend({
 	options: {
@@ -2238,12 +2325,12 @@ SpatialFilterUtils.SpatialFilterVertex = L.Editable.VertexMarker.extend({
 		className: "leaflet-div-icon leaflet-editing-icon spatial-filter-edge"
 	},
 
-	onAdd: function (map) {
+	onAdd: function onAdd(map) {
 		L.Editable.VertexMarker.prototype.onAdd.call(this, map);
 		this.onAddEvent();
 	},
 
-	onAddEvent: function () {
+	onAddEvent: function onAddEvent() {
 		this.editor.onVertexMarkerAddEvent(this);
 	}
 });
@@ -2254,7 +2341,7 @@ SpatialFilterUtils.SpatialFilterMiddleVertex = L.Editable.MiddleMarker.extend({
 	}
 });
 
-var SpatialFilter = L.Editable.extend({
+var SpatialFilter = exports.SpatialFilter = L.Editable.extend({
 	options: {
 		vertexMarkerClass: SpatialFilterUtils.SpatialFilterVertex,
 		polygonClass: SpatialFilterUtils.SpatialFilterPolygon,
@@ -2265,7 +2352,7 @@ var SpatialFilter = L.Editable.extend({
 		}
 	},
 
-	initialize: function (map, options) {
+	initialize: function initialize(map, options) {
 		L.Editable.prototype.initialize.call(this, map);
 		L.setOptions(this, options);
 		this.map = map;
@@ -2276,23 +2363,23 @@ var SpatialFilter = L.Editable.extend({
 		}, this);
 	},
 
-	disableMapZoom: function () {
+	disableMapZoom: function disableMapZoom() {
 		this.map.doubleClickZoom.disable();
 		this.map.touchZoom.disable();
 	},
 
-	enableMapZoom: function () {
+	enableMapZoom: function enableMapZoom() {
 		this.map.doubleClickZoom.enable();
 		this.map.touchZoom.enable();
 	},
-	enableMapZoomWhile: function () {
+	enableMapZoomWhile: function enableMapZoomWhile() {
 		var self = this;
 		setTimeout(function () {
 			self.map.doubleClickZoom.enable();
 			self.map.touchZoom.enable();
 		}, 10);
 	},
-	abortDrawing: function () {
+	abortDrawing: function abortDrawing() {
 		this.off("editable:drawing:end", this.enableMapZoomWhile);
 		this.off("editable:drawing:end", this.drawingPolygonEnd);
 		this.off("editable:vertex:dragend", this.drawingPolygonEnd);
@@ -2304,7 +2391,7 @@ var SpatialFilter = L.Editable.extend({
 		this.removeLabel();
 	},
 
-	startPolygonSpatialFilter: function () {
+	startPolygonSpatialFilter: function startPolygonSpatialFilter() {
 		this.on("editable:drawing:end", this.drawingPolygonEnd);
 		this.on("editable:vertex:dragend", this.drawingPolygonEnd);
 		this.on("editable:vertex:deleted", this.drawingPolygonEnd);
@@ -2314,7 +2401,7 @@ var SpatialFilter = L.Editable.extend({
 		L.Editable.prototype.startPolygon.call(this);
 	},
 
-	startCircleSpatialFilter: function () {
+	startCircleSpatialFilter: function startCircleSpatialFilter() {
 		this.on("editable:drawing:start", this.disableMapZoom, this);
 		this.on("editable:drawing:end", this.drawingCircleEnd);
 		this.on("editable:vertex:dragend", this.drawingCircleEnd);
@@ -2324,7 +2411,7 @@ var SpatialFilter = L.Editable.extend({
 		L.Editable.prototype.startCircle.call(this);
 	},
 
-	drawingPolygonEnd: function (e) {
+	drawingPolygonEnd: function drawingPolygonEnd(e) {
 		if (e.editor) {
 			var counter = 0;
 			e.editor.editLayer.eachLayer(function (layer) {
@@ -2341,7 +2428,7 @@ var SpatialFilter = L.Editable.extend({
 		layer._map.fireEvent("spatialfilter:bounds", layer.toGeoJSON().geometry.coordinates);
 	},
 
-	drawingCircleEnd: function (e) {
+	drawingCircleEnd: function drawingCircleEnd(e) {
 		e.editTools.featuresLayer.eachLayer(function (layer) {
 			layer.bringToBack();
 		});
@@ -2351,7 +2438,7 @@ var SpatialFilter = L.Editable.extend({
 			radius: layer.getRadius()
 		});
 	},
-	shawRadius: function (e) {
+	shawRadius: function shawRadius(e) {
 		var distance;
 		var screenCords;
 		var editor = e.editTools || this;
@@ -2367,7 +2454,7 @@ var SpatialFilter = L.Editable.extend({
 		editor.createMouseMoveLabel(distance, screenCords);
 	},
 
-	createMouseMoveLabel: function (distance, screenCords) {
+	createMouseMoveLabel: function createMouseMoveLabel(distance, screenCords) {
 		this.removeLabel();
 		if (!distance) {
 			return;
@@ -2416,7 +2503,7 @@ var SpatialFilter = L.Editable.extend({
 		rectangle.attr("class", "spatial-filter-label-rectangle").attr("width", rectangleWidth + 5).attr("height", rectangleHeight).attr("x", bbox.x - 5).attr("y", bbox.y - 1).style("fill", "white").style("fill-opacity", 0.5).style("stroke", "#3f51b5").style("stroke-width", "1px").style("stroke-opacity", 1);
 	},
 
-	removeLabel: function () {
+	removeLabel: function removeLabel() {
 		var elem = $(".spatial-filter");
 		if (elem) {
 			elem.remove();
@@ -2426,33 +2513,36 @@ var SpatialFilter = L.Editable.extend({
 
 /***/ }),
 /* 16 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Routing; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config_urlConfig_js__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__McadPoints_js__ = __webpack_require__(18);
-var _this = this;
 
 
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.Routing = undefined;
 
+var _urlConfig = __webpack_require__(17);
 
-var Routing = {};
+var _McadPoints = __webpack_require__(18);
+
+var Routing = exports.Routing = {};
 
 var RouteProvider = L.Class.extend({
 
 	options: {
-		baseUrl: __WEBPACK_IMPORTED_MODULE_0__config_urlConfig_js__["a" /* config */].routingUrl
+		baseUrl: _urlConfig.config.routingUrl
 	},
 
-	initialize: function (options) {
+	initialize: function initialize(options) {
 		L.setOptions(this, options);
 		this.startPoint = null;
 		this.endPoint = null;
 		this.middlePoints = [];
 	},
 
-	request: function () {
+	request: function request() {
 		this.checkPoints();
 		var that = this;
 		var $http = TDMap.Utils.Promise.httpPromise();
@@ -2467,7 +2557,7 @@ var RouteProvider = L.Class.extend({
 		});
 	},
 
-	parceResult: function (res) {
+	parceResult: function parceResult(res) {
 		var routes = [];
 		for (var i = 0; i < res.routes.length; i++) {
 			var route = {
@@ -2497,11 +2587,11 @@ var RouteProvider = L.Class.extend({
 		return routes;
 	},
 
-	getUrl: function () {
+	getUrl: function getUrl() {
 		return this.options.url + this.getEndPointAsString() + ";" + this.getMiddlePointsAsString() + this.getStartPointAsString();
 	},
 
-	setStartPoint: function (cords) {
+	setStartPoint: function setStartPoint(cords) {
 		if (cords instanceof L.LatLng) {
 			this.startPoint = cords;
 		} else {
@@ -2510,7 +2600,7 @@ var RouteProvider = L.Class.extend({
 		return this;
 	},
 
-	setEndPoint: function (cords) {
+	setEndPoint: function setEndPoint(cords) {
 		if (cords instanceof L.LatLng) {
 			this.endPoint = cords;
 		} else {
@@ -2519,7 +2609,7 @@ var RouteProvider = L.Class.extend({
 		return this;
 	},
 
-	setMiddlePoints: function (cordsArray) {
+	setMiddlePoints: function setMiddlePoints(cordsArray) {
 		if (this.middlePoints.length > 0) {
 			this.middlePoints = [];
 		}
@@ -2534,27 +2624,27 @@ var RouteProvider = L.Class.extend({
 		return this;
 	},
 
-	getStartPoint: function () {
+	getStartPoint: function getStartPoint() {
 		return this.startPoint;
 	},
 
-	getEndPoint: function () {
+	getEndPoint: function getEndPoint() {
 		return this.endPoint;
 	},
 
-	getMiddlePoints: function () {
+	getMiddlePoints: function getMiddlePoints() {
 		return this.middlePoints;
 	},
 
-	getStartPointAsString: () => {
-		return "" + _this.startPoint.lng + ',' + _this.startPoint.lat;
+	getStartPointAsString: function getStartPointAsString() {
+		return "" + undefined.startPoint.lng + ',' + undefined.startPoint.lat;
 	},
 
-	getEndPointAsString: function () {
+	getEndPointAsString: function getEndPointAsString() {
 		return "" + this.endPoint.lng + ',' + this.endPoint.lat;
 	},
 
-	getMiddlePointsAsString: function () {
+	getMiddlePointsAsString: function getMiddlePointsAsString() {
 		var result = '';
 		if (this.middlePoints.length > 0) {
 			for (var i = 0; i < this.middlePoints.length; i++) {
@@ -2563,7 +2653,7 @@ var RouteProvider = L.Class.extend({
 		}
 		return result;
 	},
-	checkPoints: function () {
+	checkPoints: function checkPoints() {
 		if (this.startPoint === null || this.startPoint === undefined) {
 			alert('Не задана начальная точка');
 			return;
@@ -2574,7 +2664,7 @@ var RouteProvider = L.Class.extend({
 		}
 	},
 
-	_decode: function (str, precision) {
+	_decode: function _decode(str, precision) {
 		var index = 0,
 		    lat = 0,
 		    lng = 0,
@@ -2631,7 +2721,7 @@ Routing.RouterStartEndVertex = L.Marker.extend({
 
 Routing.RouterWayMarker = L.Marker.extend({
 
-	initialize: function (latlng, editor) {
+	initialize: function initialize(latlng, editor) {
 		var markerOptions = {
 			draggable: true,
 			icon: L.divIcon({
@@ -2646,11 +2736,11 @@ Routing.RouterWayMarker = L.Marker.extend({
 		this.on('dblclick', this.removeOnClick, this);
 	},
 
-	onDragEnd: function (e) {
+	onDragEnd: function onDragEnd(e) {
 		this.editTools.redrawRouteViaAndEnd(this);
 	},
 
-	removeOnClick: function (e) {
+	removeOnClick: function removeOnClick(e) {
 		this.remove();
 		delete this.editTools.wayPoints._layers[this._leaflet_id];
 		this.editTools.redrawRouteViaAndEnd();
@@ -2663,22 +2753,22 @@ Routing.RouterEditVertex = L.Editable.VertexMarker.extend({
 		className: 'leaflet-div-icon leaflet-editing-icon router-edge'
 	},
 
-	onAdd: function (map) {
+	onAdd: function onAdd(map) {
 		L.Editable.VertexMarker.prototype.onAdd.call(this, map);
 		this.map = map;
 		this.on('mouseout', this.onMouseOut, this);
 	},
 
-	onMouseOut: function (e) {
+	onMouseOut: function onMouseOut(e) {
 		this.remove();
 	},
 
-	onMouseDown: function (e) {
+	onMouseDown: function onMouseDown(e) {
 		L.Editable.VertexMarker.prototype.onDragEnd.call(this, e);
 		this.replaceEditOnViaMarker(e);
 	},
 
-	replaceEditOnViaMarker: function (e) {
+	replaceEditOnViaMarker: function replaceEditOnViaMarker(e) {
 		var marker = new TDMap.Routing.RouterWayMarker(e.target._latlng, e.layer.editor.tools);
 		e.layer.editor.refresh();
 		L.Draggable._dragging = false;
@@ -2694,7 +2784,7 @@ Routing.Router = L.Editable.extend({
 		skipMiddleMarkers: true
 	},
 
-	initialize: function (map, options) {
+	initialize: function initialize(map, options) {
 		L.Editable.prototype.initialize.call(this, map, options);
 		this.tools = this;
 		this.map = map;
@@ -2708,7 +2798,7 @@ Routing.Router = L.Editable.extend({
 		}, this);
 	},
 
-	abortDrawing: function () {
+	abortDrawing: function abortDrawing() {
 		for (var key in this.editLayer._layers) {
 			this.editLayer._layers[key].remove();
 			delete this.editLayer._layers[key];
@@ -2718,7 +2808,7 @@ Routing.Router = L.Editable.extend({
 		this.featuresLayer.remove();
 	},
 
-	startRouter: function () {
+	startRouter: function startRouter() {
 		this.on('editable:drawing:commit', this.endRouter);
 		this.on('editable:dragstart', this.showMCADPoints);
 		this.on('editable:dragend', this.redrawRouteViaAndEnd);
@@ -2726,7 +2816,7 @@ Routing.Router = L.Editable.extend({
 		L.Editable.prototype.startMarker.call(this);
 	},
 
-	endRouter: function (e) {
+	endRouter: function endRouter(e) {
 		var point = e.latlng;
 
 		if (e.editTools.startPoint !== null && e.layer.options.routePoint !== 'start') {
@@ -2743,7 +2833,7 @@ Routing.Router = L.Editable.extend({
 		this.getElevenRoutesThenOne();
 	},
 
-	bringEndPointToMcad: function (endPoint) {
+	bringEndPointToMcad: function bringEndPointToMcad(endPoint) {
 		var arrayOfEndPoints = this.arrayOfMCAD();
 		var resultArrayOfPoints = [];
 		for (var i = 0; i < arrayOfEndPoints.length; i++) {
@@ -2755,7 +2845,7 @@ Routing.Router = L.Editable.extend({
 		endPoint.setLatLng(resultArrayOfPoints.sort(this.comFunction).slice(0, 1)[0].layerLatLng);
 	},
 
-	redrawRouteViaAndEnd: function (e) {
+	redrawRouteViaAndEnd: function redrawRouteViaAndEnd(e) {
 		var editor;
 		if (e) {
 			var layer = e.layer || e;
@@ -2777,12 +2867,12 @@ Routing.Router = L.Editable.extend({
 			editor.clearRoutes().drawRoute(editor.routeProvider.parceResult(res.data)[0]);
 		});
 	},
-	clearRoutes: function () {
+	clearRoutes: function clearRoutes() {
 		this.route.remove();
 		delete this.route;
 		return this;
 	},
-	drawRoute: function (route) {
+	drawRoute: function drawRoute(route) {
 		var that = this;
 		var concatGeoms = [];
 		for (var l = 0; l < route.legs.length; l++) {
@@ -2821,15 +2911,15 @@ Routing.Router = L.Editable.extend({
 		});
 		return this;
 	},
-	clickWayMarker: function (e) {
+	clickWayMarker: function clickWayMarker(e) {
 		var marker = new TDMap.Routing.RouterWayMarker(e.latlng, e.target.editor.tools);
 		e.target.editor.refresh();
 	},
-	routeMouseOver: function (e) {
+	routeMouseOver: function routeMouseOver(e) {
 		e.target.editor.tools.clearAllViaMarkers().createViaMarker(e);
 	},
 
-	clearAllViaMarkers: function () {
+	clearAllViaMarkers: function clearAllViaMarkers() {
 		var that = this;
 		if (this.editMarker) {
 			this.editMarker.remove();
@@ -2843,7 +2933,7 @@ Routing.Router = L.Editable.extend({
 		return this;
 	},
 
-	createViaMarker: function (e) {
+	createViaMarker: function createViaMarker(e) {
 		var that = this;
 		var layer = e.target;
 		var math = this._closestPolylineData(e.layerPoint, layer);
@@ -2851,7 +2941,7 @@ Routing.Router = L.Editable.extend({
 		this.editLayer.addLayer(this.editMarker);
 	},
 
-	_closestPolylineData: function (currentPoint, layer, what) {
+	_closestPolylineData: function _closestPolylineData(currentPoint, layer, what) {
 		var latLngs = layer.getLatLngs();
 		var points = layer._rings[0];
 		var distArray = [];
@@ -2876,7 +2966,7 @@ Routing.Router = L.Editable.extend({
 		};
 	},
 
-	getElevenRoutesThenOne: function () {
+	getElevenRoutesThenOne: function getElevenRoutesThenOne() {
 		var that = this;
 		var elevenPoints = this.getElevenPoints();
 		var elevenRoutes = [];
@@ -2897,7 +2987,7 @@ Routing.Router = L.Editable.extend({
 		});
 	},
 
-	getElevenPoints: function () {
+	getElevenPoints: function getElevenPoints() {
 		var arrayOfEndPoints = this.arrayOfMCAD();
 		var resultArrayOfPoints = [];
 		for (var i = 0; i < arrayOfEndPoints.length; i++) {
@@ -2909,18 +2999,18 @@ Routing.Router = L.Editable.extend({
 
 		return resultArrayOfPoints.sort(this.comFunction).slice(0, 11);
 	},
-	comFunction: function (a, b) {
+	comFunction: function comFunction(a, b) {
 		if (a.distance < b.distance) return -1;
 		if (a.distance > b.distance) return 1;
 		return 0;
 	},
-	comFunction2: function (a, b) {
+	comFunction2: function comFunction2(a, b) {
 		if (a[0].distance < b[0].distance) return -1;
 		if (a[0].distance > b[0].distance) return 1;
 		return 0;
 	},
 
-	showMCADPoints: function (e) {
+	showMCADPoints: function showMCADPoints(e) {
 		if (e.layer.options.routePoint === 'start') {
 			return;
 		}
@@ -2937,17 +3027,17 @@ Routing.Router = L.Editable.extend({
 		}
 	},
 
-	hideMCADPoints: function () {
+	hideMCADPoints: function hideMCADPoints() {
 		if (this.mcadPoints) {
 			this.mcadPoints.remove();
 			delete this.mcadPoints;
 		}
 	},
 
-	arrayOfMCAD: function () {
+	arrayOfMCAD: function arrayOfMCAD() {
 		var latlngs = [];
-		for (var i = 0; i < __WEBPACK_IMPORTED_MODULE_1__McadPoints_js__["a" /* McadPoints */].length; i++) {
-			latlngs.push(new L.latLng(__WEBPACK_IMPORTED_MODULE_1__McadPoints_js__["a" /* McadPoints */][i][1], __WEBPACK_IMPORTED_MODULE_1__McadPoints_js__["a" /* McadPoints */][i][0]));
+		for (var i = 0; i < _McadPoints.McadPoints.length; i++) {
+			latlngs.push(new L.latLng(_McadPoints.McadPoints[i][1], _McadPoints.McadPoints[i][0]));
 		}
 
 		return latlngs;
@@ -2956,83 +3046,98 @@ Routing.Router = L.Editable.extend({
 
 /***/ }),
 /* 17 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return config; });
-var config = {
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+var config = exports.config = {
 	routingUrl: 'http://188.134.5.249:3030/route/v1/driving/'
 };
 
 /***/ }),
 /* 18 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return McadPoints; });
-var McadPoints = [[37.370743963, 55.7900346394], [37.378270044, 55.7960801265], [37.3858805489, 55.8090674539], [37.389455252, 55.813351974], [37.3903679421, 55.8159160498], [37.3919461355, 55.8212680135], [37.3953893225, 55.8333960946], [37.394925847, 55.8319678193], [37.3956507702, 55.8356785564], [37.392347022, 55.8497441067], [37.3974159383, 55.8591232043], [37.399958636, 55.8625941994], [37.4031815731, 55.8656151612], [37.4191322597, 55.8738805922], [37.4258562192, 55.8760086759], [37.4316175758, 55.8778166554], [37.4439531536, 55.8815563457], [37.4512047621, 55.8827081777], [37.4862720291, 55.8882668866], [37.4868139389, 55.8884188401], [37.490236527, 55.8895784658], [37.4949211944, 55.8916017297], [37.4996557746, 55.8936968563], [37.5481067871, 55.9084475027], [37.5427946452, 55.9078799665], [37.5708028243, 55.910857441], [37.5818763228, 55.9109853275], [37.5877874176, 55.9101860305], [37.5935701654, 55.908703291], [37.6295144706, 55.8997257115], [37.6664142483, 55.8956172896], [37.6715481304, 55.8954200531], [37.682538441, 55.8951108695], [37.6992520794, 55.8940873477], [37.7073902333, 55.8917043562], [37.7131420827, 55.8891239499], [37.7249975475, 55.8830294581], [37.730901512, 55.8801391721], [37.8278463193, 55.8302772253], [37.8301660734, 55.8289422831], [37.8391218456, 55.814708952], [37.8394926259, 55.8111511412], [37.8396067122, 55.8101895149], [37.8429437356, 55.7779506079], [37.8433050088, 55.7748493065], [37.8436282532, 55.7707316803], [37.8434286022, 55.7670200964], [37.8428771853, 55.7553107823], [37.8423542899, 55.7460542456], [37.8419930167, 55.740777572], [37.8405205908, 55.7291252899], [37.8390659908, 55.7170578494], [37.8378966066, 55.712804242], [37.836848439, 55.7107997849], [37.8314293412, 55.7005991606], [37.8314970799, 55.6854640667], [37.8323455965, 55.683124557], [37.8395686834, 55.6574611634], [37.8387486884, 55.6553452535], [37.8348982768, 55.6505136313], [37.8273828438, 55.6453112266], [37.8204948853, 55.6408043314], [37.8180919433, 55.6392267955], [37.7986117128, 55.6264190387], [37.798233802, 55.6261291856], [37.7809614181, 55.6167931363], [37.7470088691, 55.5989104603], [37.7396645655, 55.5958352148], [37.7323202619, 55.5927731589], [37.7219336578, 55.588387825], [37.7191765729, 55.5872863778], [37.703382755, 55.5814025142], [37.6896686348, 55.5762500511], [37.6838335975, 55.5741539404], [37.6500117722, 55.5726892838], [37.6382585097, 55.5733745886], [37.6352780059, 55.5735761466], [37.6193059282, 55.574511362], [37.6028775054, 55.575462679], [37.6003390859, 55.575615855], [37.5903850589, 55.576671947], [37.5739281146, 55.5805735977], [37.5698923128, 55.5815167072], [37.5298765539, 55.5911157886], [37.5259976207, 55.5920264108], [37.4967972401, 55.6066901578], [37.4937525628, 55.6093362997], [37.4890179826, 55.6134038409], [37.4711563511, 55.6283977433], [37.4677480238, 55.6313805399], [37.4600614614, 55.6377881553], [37.4568100027, 55.640673655], [37.4524580869, 55.6446769169], [37.4289135331, 55.666142281], [37.4255979009, 55.6706382181], [37.4170271699, 55.6820607217], [37.4153016151, 55.6853328693], [37.4109805977, 55.6925354533], [37.400178054, 55.7007653533], [37.3953079964, 55.7043493189], [37.3908015888, 55.7076959317], [37.3830651137, 55.7185373097], [37.3796710471, 55.7252358495], [37.3747653376, 55.7346873495], [37.3729470877, 55.7384889855], [37.3689089091, 55.7629799824], [37.3690515169, 55.7672802708], [37.369179864, 55.7696949637], [37.3693224718, 55.7733768817], [37.3756970421, 55.7931762657]];
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+var McadPoints = exports.McadPoints = [[37.370743963, 55.7900346394], [37.378270044, 55.7960801265], [37.3858805489, 55.8090674539], [37.389455252, 55.813351974], [37.3903679421, 55.8159160498], [37.3919461355, 55.8212680135], [37.3953893225, 55.8333960946], [37.394925847, 55.8319678193], [37.3956507702, 55.8356785564], [37.392347022, 55.8497441067], [37.3974159383, 55.8591232043], [37.399958636, 55.8625941994], [37.4031815731, 55.8656151612], [37.4191322597, 55.8738805922], [37.4258562192, 55.8760086759], [37.4316175758, 55.8778166554], [37.4439531536, 55.8815563457], [37.4512047621, 55.8827081777], [37.4862720291, 55.8882668866], [37.4868139389, 55.8884188401], [37.490236527, 55.8895784658], [37.4949211944, 55.8916017297], [37.4996557746, 55.8936968563], [37.5481067871, 55.9084475027], [37.5427946452, 55.9078799665], [37.5708028243, 55.910857441], [37.5818763228, 55.9109853275], [37.5877874176, 55.9101860305], [37.5935701654, 55.908703291], [37.6295144706, 55.8997257115], [37.6664142483, 55.8956172896], [37.6715481304, 55.8954200531], [37.682538441, 55.8951108695], [37.6992520794, 55.8940873477], [37.7073902333, 55.8917043562], [37.7131420827, 55.8891239499], [37.7249975475, 55.8830294581], [37.730901512, 55.8801391721], [37.8278463193, 55.8302772253], [37.8301660734, 55.8289422831], [37.8391218456, 55.814708952], [37.8394926259, 55.8111511412], [37.8396067122, 55.8101895149], [37.8429437356, 55.7779506079], [37.8433050088, 55.7748493065], [37.8436282532, 55.7707316803], [37.8434286022, 55.7670200964], [37.8428771853, 55.7553107823], [37.8423542899, 55.7460542456], [37.8419930167, 55.740777572], [37.8405205908, 55.7291252899], [37.8390659908, 55.7170578494], [37.8378966066, 55.712804242], [37.836848439, 55.7107997849], [37.8314293412, 55.7005991606], [37.8314970799, 55.6854640667], [37.8323455965, 55.683124557], [37.8395686834, 55.6574611634], [37.8387486884, 55.6553452535], [37.8348982768, 55.6505136313], [37.8273828438, 55.6453112266], [37.8204948853, 55.6408043314], [37.8180919433, 55.6392267955], [37.7986117128, 55.6264190387], [37.798233802, 55.6261291856], [37.7809614181, 55.6167931363], [37.7470088691, 55.5989104603], [37.7396645655, 55.5958352148], [37.7323202619, 55.5927731589], [37.7219336578, 55.588387825], [37.7191765729, 55.5872863778], [37.703382755, 55.5814025142], [37.6896686348, 55.5762500511], [37.6838335975, 55.5741539404], [37.6500117722, 55.5726892838], [37.6382585097, 55.5733745886], [37.6352780059, 55.5735761466], [37.6193059282, 55.574511362], [37.6028775054, 55.575462679], [37.6003390859, 55.575615855], [37.5903850589, 55.576671947], [37.5739281146, 55.5805735977], [37.5698923128, 55.5815167072], [37.5298765539, 55.5911157886], [37.5259976207, 55.5920264108], [37.4967972401, 55.6066901578], [37.4937525628, 55.6093362997], [37.4890179826, 55.6134038409], [37.4711563511, 55.6283977433], [37.4677480238, 55.6313805399], [37.4600614614, 55.6377881553], [37.4568100027, 55.640673655], [37.4524580869, 55.6446769169], [37.4289135331, 55.666142281], [37.4255979009, 55.6706382181], [37.4170271699, 55.6820607217], [37.4153016151, 55.6853328693], [37.4109805977, 55.6925354533], [37.400178054, 55.7007653533], [37.3953079964, 55.7043493189], [37.3908015888, 55.7076959317], [37.3830651137, 55.7185373097], [37.3796710471, 55.7252358495], [37.3747653376, 55.7346873495], [37.3729470877, 55.7384889855], [37.3689089091, 55.7629799824], [37.3690515169, 55.7672802708], [37.369179864, 55.7696949637], [37.3693224718, 55.7733768817], [37.3756970421, 55.7931762657]];
 
 /***/ }),
 /* 19 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return GeoJSONService; });
-/* unused harmony export geoJSONService */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_TDMap_Utils_Promises_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TDMap_Service_GeoJSONSelection_js__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TDMap_Service_GeoJSONProvider_js__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_Subject__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_Subject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_Subject__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_map__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_map__);
-var _this = this;
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.geoJSONService = exports.GeoJSONService = undefined;
 
+var _TDMapUtilsPromises = __webpack_require__(4);
 
+var _TDMapServiceGeoJSONSelection = __webpack_require__(20);
 
+var _TDMapServiceGeoJSONProvider = __webpack_require__(32);
 
+var _Subject = __webpack_require__(5);
 
+__webpack_require__(33);
 
-var GeoJSONService = L.GeoJSON.extend({
+var GeoJSONService = exports.GeoJSONService = L.GeoJSON.extend({
     // стили приходят с сервера feature.properies.style
     // стили пользователя хранятся на сервере с привязкой к атрибуту
-    initialize: function (options) {
+    initialize: function initialize(options) {
         L.setOptions(this, options);
         L.GeoJSON.prototype.initialize.call(this, null, options);
-        this._provider = new __WEBPACK_IMPORTED_MODULE_2__TDMap_Service_GeoJSONProvider_js__["a" /* GeoJSONProvider */](options.dataUrl);
+        this._provider = new _TDMapServiceGeoJSONProvider.GeoJSONProvider(options.dataUrl);
         this.filteredIds = [];
-        this.featuresFlow = new __WEBPACK_IMPORTED_MODULE_3_rxjs_Subject__["Subject"]();
+        this.featuresFlow = new _Subject.Subject();
         this._processFeatures();
         if (this.options.selectable) {
-            this.selections = new __WEBPACK_IMPORTED_MODULE_1__TDMap_Service_GeoJSONSelection_js__["a" /* GeoJSONSelection */](this.options.selectionOptions || {});
+            this.selections = new _TDMapServiceGeoJSONSelection.GeoJSONSelection(this.options.selectionOptions || {});
         }
     },
 
-    setStyled: () => _this.styled = true,
-    removeStyles: () => _this.styled = false,
-    setLabeled: () => _this.labeled = true,
-    removeLabels: () => _this.labeled = false,
+    setStyled: function setStyled() {
+        return undefined.styled = true;
+    },
+    removeStyles: function removeStyles() {
+        return undefined.styled = false;
+    },
+    setLabeled: function setLabeled() {
+        return undefined.labeled = true;
+    },
+    removeLabels: function removeLabels() {
+        return undefined.labeled = false;
+    },
 
-    onAdd: function (map) {
+    onAdd: function onAdd(map) {
         this._map = map;
         L.GeoJSON.prototype.onAdd.call(this, map);
         this._updateData();
         this._map.on("moveend", this._updateData, this);
     },
 
-    onRemove: function (map) {
+    onRemove: function onRemove(map) {
         this.clearLayers();
         L.GeoJSON.prototype.onRemove.call(this, map);
         map.off("moveend", this._updateData, this);
     },
 
-    _updateData: function (e) {
-        let bbox;
+    _updateData: function _updateData(e) {
+        var bbox = void 0;
         this.options.bounds || this.options.circle ? bbox = this.options.bounds || this.options.circle : bbox = this._map.getBounds();
 
-        let zoom = this._map.getZoom();
+        var zoom = this._map.getZoom();
 
         if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
             this.clearLayers();
@@ -3042,60 +3147,67 @@ var GeoJSONService = L.GeoJSON.extend({
         this._updateDataByBounds(bbox);
     },
 
-    _updateDataByBounds: function (bbox) {
-        this._provider.getDataByBounds(bbox).map(res => this.filterData(res)).subscribe(res => this.featuresFlow.next(res), error => this.clearLayers());
+    _updateDataByBounds: function _updateDataByBounds(bbox) {
+        var _this = this;
+
+        this._provider.getDataByBounds(bbox).map(function (res) {
+            return _this.filterData(res);
+        }).subscribe(function (res) {
+            return _this.featuresFlow.next(res);
+        }, function (error) {
+            return _this.clearLayers();
+        });
     },
 
-    _processFeatures: function () {
-        this.featuresFlow.map(features => this._replaceData(features)).subscribe();
+    _processFeatures: function _processFeatures() {
+        var _this2 = this;
+
+        this.featuresFlow.map(function (features) {
+            return _this2._replaceData(features);
+        }).subscribe();
     },
 
-    filterData: function (data) {
-        return data.features.filter(item => this.filteredIds.indexOf(item.properies.id) === -1 ? item : false);
+    filterData: function filterData(data) {
+        var _this3 = this;
+
+        return data.features.filter(function (item) {
+            return _this3.filteredIds.indexOf(item.properies.id) === -1 ? item : false;
+        });
     },
 
-    _replaceData: function (features) {
+    _replaceData: function _replaceData(features) {
         this.clearLayers();
         if (!features) return;
 
-        for (let i = features.length - 1; i >= 0; i--) {
+        for (var i = features.length - 1; i >= 0; i--) {
             this.addData(features[i]);
         }
-        this.subscribeOnSelection();
         this._map.fire("layer:load");
+        this.subscribeOnSelection();
     },
 
-    subscribeOnSelection: function () {
+    subscribeOnSelection: function subscribeOnSelection() {
+        var _this4 = this;
+
         if (this.options.selectable) {
-            this.eachLayer(layer => {
-                if (this.selections.isInSelections(layer)) {
-                    this.selections.setSelectionStyle(layer);
-                }
+            this.eachLayer(function (layer) {
+                _this4.selections.addSelections(layer, true);
             });
 
             this.on('click', this.selections.addSelections, this.selections);
             this._map.doubleClickZoom.disable();
-            this.on('dblclick', this.clearSelections, this);
+            this.on('dblclick', this.selections.clearSelections, this.selections);
         }
     },
 
-    clearSelections: function () {
-        this.eachLayer(layer => {
-            if (this.selections.isInSelections(layer)) {
-                layer.setStyle(layer.beforeSelectionStyle);
-            }
-        });
-        this.selections.clearSelections();
+    setFilteredIds: function setFilteredIds(arrayOfId) {
+        undefined.filteredIds = arrayOfId;
+        return undefined.stayOrRemoveViaFilteredIds();
     },
 
-    setFilteredIds: arrayOfId => {
-        _this.filteredIds = arrayOfId;
-        return _this.stayOrRemoveViaFilteredIds();
-    },
-
-    stayOrRemoveViaFilteredIds: () => {
-        _this.eachLayer(layer => {
-            if (_this.filteredIds.indexOf(layer.feature.properies.zu_id) === -1) {
+    stayOrRemoveViaFilteredIds: function stayOrRemoveViaFilteredIds() {
+        undefined.eachLayer(function (layer) {
+            if (undefined.filteredIds.indexOf(layer.feature.properies.zu_id) === -1) {
                 layer._path.style.visibility = "hidden";
             } else {
                 if (layer._path.style.visibility === "hidden") {
@@ -3103,30 +3215,35 @@ var GeoJSONService = L.GeoJSON.extend({
                 }
             }
         });
-        return _this;
+        return undefined;
     },
 
-    removeFilteredIds: () => {
-        _this.filteredIds = [];
-        _this._updateData();
-        return _this;
+    removeFilteredIds: function removeFilteredIds() {
+        undefined.filteredIds = [];
+        undefined._updateData();
+        return undefined;
     }
 });
-var geoJSONService = function (options) {
+
+var geoJSONService = exports.geoJSONService = function geoJSONService(options) {
     return new GeoJSONService(options);
 };
 
 /***/ }),
 /* 20 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return GeoJSONSelection; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rxjs_BehaviorSubject__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rxjs_BehaviorSubject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_rxjs_BehaviorSubject__);
 
 
-var GeoJSONSelection = L.Class.extend({
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.GeoJSONSelection = undefined;
+
+var _BehaviorSubject = __webpack_require__(21);
+
+var GeoJSONSelection = exports.GeoJSONSelection = L.Class.extend({
     options: {
         multiple: false,
         activeStyle: {
@@ -3135,21 +3252,73 @@ var GeoJSONSelection = L.Class.extend({
         }
     },
 
-    initialize: function (options) {
+    initialize: function initialize(options) {
+        var _this = this;
+
         L.setOptions(this, options);
-        this.tempSelectedFeature = new __WEBPACK_IMPORTED_MODULE_0_rxjs_BehaviorSubject__["BehaviorSubject"](false);
-        this.inSelectionsFeatureIds = new __WEBPACK_IMPORTED_MODULE_0_rxjs_BehaviorSubject__["BehaviorSubject"]([]);
+        this.previousLayer = [];
+        this.tempSelectedFeature = new _BehaviorSubject.BehaviorSubject(false);
+        this.inSelectionsFeatures = new _BehaviorSubject.BehaviorSubject([]);
+
+        document.onkeydown = function (e) {
+            if (e.keyCode === 27) {
+                _this.clearSelections();
+            }
+        };
     },
 
-    addSelections: function (feature) {
-        if (!feature) return;
-        let layer = feature.layer || feature;
-        if (this.isInSelections(layer)) return;
-        this.setSelectionStyle(layer);
-        this.options.multiple ? this.inSelectionsFeatureIds.next([layer.feature.properies.id]) : this.inSelectionsFeatureIds.next(this.inSelectionsFeatureIds.getValue().concat([layer.feature.properies.id]));
+    addSelections: function addSelections(eventOrFeature, onDataAdd) {
+        if (!eventOrFeature) return;
+        var layer = eventOrFeature.layer || eventOrFeature;
+        var ctrlKey = false;
+        if (eventOrFeature.originalEvent && eventOrFeature.originalEvent.ctrlKey) {
+            ctrlKey = true;
+        }
+
+        if (onDataAdd && this.previousLayer.length) {
+            for (var i = this.previousLayer.length - 1; i >= 0; i--) {
+                if (this.previousLayer[i].feature.properies.id === layer.feature.properies.id) {
+                    this.previousLayer[i] = layer;
+                }
+            }
+        }
+        if (onDataAdd && this.isInSelections(layer)) {
+            var layers = this.inSelectionsFeatures.getValue();
+            for (var _i = 0; _i < layers.length; _i++) {
+                if (layers[_i].feature.properies.id === layer.feature.properies.id) {
+                    layers[_i] = layer;
+                    this.setSelectionStyle(layer);
+                }
+            }
+            this.inSelectionsFeatures.next(layers);
+        }
+
+        if (!onDataAdd) {
+            if (!this.isInSelections(layer)) {
+                if (this.options.multiple || ctrlKey) {
+                    this.previousLayer.push(layer);
+                    this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().concat([layer]));
+                } else {
+                    for (var _i2 = this.previousLayer.length - 1; _i2 >= 0; _i2--) {
+                        this.setBeforeSelectionStyle(this.previousLayer[_i2]);
+                    }
+                    this.previousLayer = [layer];
+                    this.inSelectionsFeatures.next([layer]);
+                }
+                this.setSelectionStyle(layer);
+            } else {
+                for (var _i3 = this.previousLayer.length - 1; _i3 >= 0; _i3--) {
+                    if (this.previousLayer[_i3].feature.properies.id === layer.feature.properies.id) {
+                        this.previousLayer.splice(_i3, 1);
+                    }
+                }
+                this.setBeforeSelectionStyle(layer);
+                this.removeSelectionLayer(layer);
+            }
+        }
     },
 
-    setSelectionStyle: function (layer) {
+    setSelectionStyle: function setSelectionStyle(layer) {
         layer.beforeSelectionStyle = {
             weight: layer.options.weight,
             color: layer.options.color
@@ -3157,26 +3326,49 @@ var GeoJSONSelection = L.Class.extend({
         layer.setStyle(this.options.activeStyle);
     },
 
-    isInSelections: function (layer) {
-        return this.inSelectionsFeatureIds.getValue().filter(inSelectionsFeatureId => inSelectionsFeatureId === layer.feature.properies.id ? true : false).length > 0;
+    setBeforeSelectionStyle: function setBeforeSelectionStyle(layer) {
+        if (layer && layer.beforeSelectionStyle) {
+            layer.setStyle(layer.beforeSelectionStyle);
+        }
     },
 
-    clearSelections: function () {
-        this.inSelectionsFeatureIds.next([]);
+    isInSelections: function isInSelections(layer) {
+        return this.inSelectionsFeatures.getValue().filter(function (inSelectionsFeatureId) {
+            return inSelectionsFeatureId.feature.properies.id === layer.feature.properies.id ? inSelectionsFeatureId : false;
+        }).length > 0;
     },
 
-    setTempFeature: function (feature) {
+    removeSelectionLayer: function removeSelectionLayer(layer) {
+        this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().filter(function (item) {
+            return item.feature.properies.id === layer.feature.properies.id ? false : item;
+        }));
+    },
+
+    clearSelections: function clearSelections() {
+        this.previousLayer = [];
+        var layers = this.inSelectionsFeatures.getValue();
+        for (var i = layers.length - 1; i >= 0; i--) {
+            this.setBeforeSelectionStyle(layers[i]);
+        }
+        this.inSelectionsFeatures.next([]);
+    },
+
+    setTempFeature: function setTempFeature(feature) {
+        var _this2 = this;
+
         if (!feature) return;
 
-        let layer = feature.layer || feature;
-        let tempStyle = {
+        var layer = feature.layer || feature;
+        var tempStyle = {
             weight: layer.options.weight,
             color: layer.options.color
         };
 
         layer.setStyle(this.options.activeStyle);
         this.tempSelectedFeature.next(layer);
-        setTimeout(() => this.tempSelectedFeature.getValue().setStyle(tempStyle), 3236);
+        setTimeout(function () {
+            return _this2.tempSelectedFeature.getValue().setStyle(tempStyle);
+        }, 3236);
     }
 });
 
@@ -3187,15 +3379,16 @@ var GeoJSONSelection = L.Class.extend({
 "use strict";
 
 
-var __extends = this && this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() {
+var __extends = undefined && undefined.__extends || function (d, b) {
+    for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+    }function __() {
         this.constructor = d;
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Subject_1 = __webpack_require__(6);
-var ObjectUnsubscribedError_1 = __webpack_require__(11);
+var Subject_1 = __webpack_require__(5);
+var ObjectUnsubscribedError_1 = __webpack_require__(10);
 /**
  * @class BehaviorSubject<T>
  */
@@ -3206,7 +3399,7 @@ var BehaviorSubject = function (_super) {
         this._value = _value;
     }
     Object.defineProperty(BehaviorSubject.prototype, "value", {
-        get: function () {
+        get: function get() {
             return this.getValue();
         },
         enumerable: true,
@@ -3238,7 +3431,12 @@ exports.BehaviorSubject = BehaviorSubject;
 
 /***/ }),
 /* 22 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var g;
 
@@ -3252,7 +3450,7 @@ try {
 	g = g || Function("return this")() || (1, eval)("this");
 } catch (e) {
 	// This works if the window reference is available
-	if (typeof window === "object") g = window;
+	if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === "object") g = window;
 }
 
 // g can still be undefined, but nothing to do about it...
@@ -3270,7 +3468,7 @@ module.exports = g;
 
 var Subscriber_1 = __webpack_require__(1);
 var rxSubscriber_1 = __webpack_require__(3);
-var Observer_1 = __webpack_require__(10);
+var Observer_1 = __webpack_require__(9);
 function toSubscriber(nextOrObserver, error, complete) {
     if (nextOrObserver) {
         if (nextOrObserver instanceof Subscriber_1.Subscriber) {
@@ -3307,8 +3505,10 @@ exports.isArray = Array.isArray || function (x) {
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 function isObject(x) {
-    return x != null && typeof x === 'object';
+    return x != null && (typeof x === "undefined" ? "undefined" : _typeof(x)) === 'object';
 }
 exports.isObject = isObject;
 //# sourceMappingURL=isObject.js.map
@@ -3320,7 +3520,7 @@ exports.isObject = isObject;
 "use strict";
 
 
-var errorObject_1 = __webpack_require__(9);
+var errorObject_1 = __webpack_require__(8);
 var tryCatchTarget;
 function tryCatcher() {
     try {
@@ -3345,9 +3545,10 @@ exports.tryCatch = tryCatch;
 "use strict";
 
 
-var __extends = this && this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() {
+var __extends = undefined && undefined.__extends || function (d, b) {
+    for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+    }function __() {
         this.constructor = d;
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -3383,13 +3584,13 @@ exports.UnsubscriptionError = UnsubscriptionError;
 var root_1 = __webpack_require__(0);
 function getSymbolObservable(context) {
     var $$observable;
-    var Symbol = context.Symbol;
-    if (typeof Symbol === 'function') {
-        if (Symbol.observable) {
-            $$observable = Symbol.observable;
+    var _Symbol = context.Symbol;
+    if (typeof _Symbol === 'function') {
+        if (_Symbol.observable) {
+            $$observable = _Symbol.observable;
         } else {
-            $$observable = Symbol('observable');
-            Symbol.observable = $$observable;
+            $$observable = _Symbol('observable');
+            _Symbol.observable = $$observable;
         }
     } else {
         $$observable = '@@observable';
@@ -3457,9 +3658,10 @@ exports.noop = noop;
 "use strict";
 
 
-var __extends = this && this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() {
+var __extends = undefined && undefined.__extends || function (d, b) {
+    for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+    }function __() {
         this.constructor = d;
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -3501,29 +3703,33 @@ exports.SubjectSubscription = SubjectSubscription;
 
 /***/ }),
 /* 32 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return GeoJSONProvider; });
-var GeoJSONProvider = L.Class.extend({
-    initialize: function (dataUrl) {
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var GeoJSONProvider = exports.GeoJSONProvider = L.Class.extend({
+    initialize: function initialize(dataUrl) {
         if (!dataUrl) {
             throw new Error("Не задан url для GeoJSONProvider");
         }
         this.dataUrl = dataUrl;
     },
 
-    getDataByBounds: function (bounds, labelLayer, styleLayer) {
-        let params = {};
+    getDataByBounds: function getDataByBounds(bounds, labelLayer, styleLayer) {
+        var params = {};
         bounds instanceof L.LatLngBounds ? params.bbox = this._getMinMaxBounds(bounds) : params.bbox = bounds;
         params.labeled = labelLayer || false;
         params.styled = styleLayer || false;
         return TDMap.Utils.Promises.getPromise(this.dataUrl, params);
     },
 
-    _getMinMaxBounds: function (bounds) {
-        let nw = bounds.getNorthWest();
-        let se = bounds.getSouthEast();
+    _getMinMaxBounds: function _getMinMaxBounds(bounds) {
+        var nw = bounds.getNorthWest();
+        var se = bounds.getSouthEast();
         return [nw.lng, se.lat, se.lng, nw.lat].toString();
     }
 });
@@ -3535,7 +3741,7 @@ var GeoJSONProvider = L.Class.extend({
 "use strict";
 
 
-var Observable_1 = __webpack_require__(7);
+var Observable_1 = __webpack_require__(6);
 var map_1 = __webpack_require__(34);
 Observable_1.Observable.prototype.map = map_1.map;
 //# sourceMappingURL=map.js.map
@@ -3594,9 +3800,10 @@ exports.map = map;
 "use strict";
 
 
-var __extends = this && this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() {
+var __extends = undefined && undefined.__extends || function (d, b) {
+    for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+    }function __() {
         this.constructor = d;
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -3686,10 +3893,14 @@ var MapSubscriber = function (_super) {
 
 /***/ }),
 /* 36 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return GoogleProvider; });
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
 // Based on https://github.com/shramov/leaflet-plugins
 // GridLayer like https://avinmathew.com/leaflet-and-google-maps/ , but using MutationObserver instead of jQuery
 
@@ -3713,7 +3924,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		maxNativeZoom: 21
 	},
 
-	initialize: function (options) {
+	initialize: function initialize(options) {
 		L.GridLayer.prototype.initialize.call(this, options);
 
 		this._ready = !!window.google && !!window.google.maps && !!window.google.maps.Map;
@@ -3741,7 +3952,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		this._imagesPerTile = this.options.type === 'hybrid' ? 2 : 1;
 	},
 
-	onAdd: function (map) {
+	onAdd: function onAdd(map) {
 		L.GridLayer.prototype.onAdd.call(this, map);
 		this._initMutantContainer();
 
@@ -3778,7 +3989,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		}.bind(this));
 	},
 
-	onRemove: function (map) {
+	onRemove: function onRemove(map) {
 		L.GridLayer.prototype.onRemove.call(this, map);
 		map._container.removeChild(this._mutantContainer);
 		this._mutantContainer = undefined;
@@ -3796,23 +4007,23 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		}
 	},
 
-	getAttribution: function () {
+	getAttribution: function getAttribution() {
 		return this.options.attribution;
 	},
 
-	setOpacity: function (opacity) {
+	setOpacity: function setOpacity(opacity) {
 		this.options.opacity = opacity;
 		if (opacity < 1) {
 			L.DomUtil.setOpacity(this._mutantContainer, opacity);
 		}
 	},
 
-	setElementSize: function (e, size) {
+	setElementSize: function setElementSize(e, size) {
 		e.style.width = size.x + 'px';
 		e.style.height = size.y + 'px';
 	},
 
-	addGoogleLayer: function (googleLayerName, options) {
+	addGoogleLayer: function addGoogleLayer(googleLayerName, options) {
 		if (!this._subLayers) this._subLayers = {};
 		return this._GAPIPromise.then(function () {
 			var Constructor = google.maps[googleLayerName];
@@ -3823,7 +4034,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		}.bind(this));
 	},
 
-	removeGoogleLayer: function (googleLayerName) {
+	removeGoogleLayer: function removeGoogleLayer(googleLayerName) {
 		var googleLayer = this._subLayers && this._subLayers[googleLayerName];
 		if (!googleLayer) return;
 
@@ -3831,7 +4042,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		delete this._subLayers[googleLayerName];
 	},
 
-	_initMutantContainer: function () {
+	_initMutantContainer: function _initMutantContainer() {
 		if (!this._mutantContainer) {
 			this._mutantContainer = L.DomUtil.create('div', 'leaflet-google-mutant leaflet-top leaflet-left');
 			this._mutantContainer.id = '_MutantContainer_' + L.Util.stamp(this._mutantContainer);
@@ -3847,7 +4058,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		this._attachObserver(this._mutantContainer);
 	},
 
-	_initMutant: function () {
+	_initMutant: function _initMutant() {
 		if (!this._ready || !this._mutantContainer) return;
 		this._mutantCenter = new google.maps.LatLng(0, 0);
 
@@ -3986,7 +4197,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		}
 	},
 
-	createTile: function (coords, done) {
+	createTile: function createTile(coords, done) {
 		var key = this._tileCoordsToKey(coords);
 
 		var tileContainer = L.DomUtil.create('div');
@@ -4021,13 +4232,13 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		return tileContainer;
 	},
 
-	_clone: function (imgNode) {
+	_clone: function _clone(imgNode) {
 		var clonedImgNode = imgNode.cloneNode(true);
 		clonedImgNode.style.visibility = 'visible';
 		return clonedImgNode;
 	},
 
-	_checkZoomLevels: function () {
+	_checkZoomLevels: function _checkZoomLevels() {
 		//setting the zoom level on the Google map may result in a different zoom level than the one requested
 		//(it won't go beyond the level for which they have data).
 		var zoomLevel = this._map.getZoom();
@@ -4042,18 +4253,18 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		}
 	},
 
-	_setMaxNativeZoom: function (zoomLevel) {
+	_setMaxNativeZoom: function _setMaxNativeZoom(zoomLevel) {
 		if (zoomLevel != this.options.maxNativeZoom) {
 			this.options.maxNativeZoom = zoomLevel;
 			this._resetView();
 		}
 	},
 
-	_reset: function () {
+	_reset: function _reset() {
 		this._initContainer();
 	},
 
-	_update: function () {
+	_update: function _update() {
 		// zoom level check needs to happen before super's implementation (tile addition/creation)
 		// otherwise tiles may be missed if maxNativeZoom is not yet correctly determined
 		if (this._mutant) {
@@ -4077,7 +4288,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		L.GridLayer.prototype._update.call(this);
 	},
 
-	_resize: function () {
+	_resize: function _resize() {
 		var size = this._map.getSize();
 		if (this._mutantContainer.style.width === size.x && this._mutantContainer.style.height === size.y) return;
 		this.setElementSize(this._mutantContainer, size);
@@ -4085,7 +4296,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		google.maps.event.trigger(this._mutant, 'resize');
 	},
 
-	_handleZoomAnim: function () {
+	_handleZoomAnim: function _handleZoomAnim() {
 		if (!this._mutant) return;
 		var center = this._map.getCenter();
 		var _center = new google.maps.LatLng(center.lat, center.lng);
@@ -4098,7 +4309,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	// this prevents a problem where Leaflet keeps a loaded tile longer than
 	// GMaps, so that GMaps makes two requests but Leaflet only consumes one,
 	// polluting _freshTiles with stale data.
-	_removeTile: function (key) {
+	_removeTile: function _removeTile(key) {
 		if (!this._mutant) return;
 
 		//give time for animations to finish before checking it tile should be pruned
@@ -4107,7 +4318,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 		return L.GridLayer.prototype._removeTile.call(this, key);
 	},
 
-	_pruneTile: function (key) {
+	_pruneTile: function _pruneTile(key) {
 		var gZoom = this._mutant.getZoom();
 		var tileZoom = key.split(':')[2];
 		var googleBounds = this._mutant.getBounds();
@@ -4133,15 +4344,19 @@ L.gridLayer.googleMutant = function (options) {
 	return new L.GridLayer.GoogleMutant(options);
 };
 
-var GoogleProvider = L.GridLayer.GoogleMutant;
+var GoogleProvider = exports.GoogleProvider = L.GridLayer.GoogleMutant;
 
 /***/ }),
 /* 37 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return YandexProvider; });
-var YandexProvider = L.Layer.extend({
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+var YandexProvider = exports.YandexProvider = L.Layer.extend({
 	includes: L.Mixin.Events,
 
 	options: {
@@ -4160,7 +4375,7 @@ var YandexProvider = L.Layer.extend({
 		publicMapInHybridView: 'publicMapHybrid'
 	},
 
-	_getPossibleMapType: function (mapType) {
+	_getPossibleMapType: function _getPossibleMapType(mapType) {
 		var result = 'yandex#map';
 		if (typeof mapType !== 'string') {
 			return result;
@@ -4179,13 +4394,13 @@ var YandexProvider = L.Layer.extend({
 
 	// Possible types: yandex#map, yandex#satellite, yandex#hybrid, yandex#publicMap, yandex#publicMapHybrid
 	// Or their short names: map, satellite, hybrid, publicMap, publicMapHybrid
-	initialize: function (type, options) {
+	initialize: function initialize(type, options) {
 		L.Util.setOptions(this, options);
 		//Assigning an initial map type for the Yandex layer
 		this._type = this._getPossibleMapType(type);
 	},
 
-	onAdd: function (map, insertAtTheBottom) {
+	onAdd: function onAdd(map, insertAtTheBottom) {
 		this._map = map;
 		this._insertAtTheBottom = insertAtTheBottom;
 
@@ -4206,7 +4421,7 @@ var YandexProvider = L.Layer.extend({
 		this._update(true);
 	},
 
-	onRemove: function (map) {
+	onRemove: function onRemove(map) {
 		this._map._container.removeChild(this._container);
 
 		this._map.off('viewreset', this._reset, this);
@@ -4216,23 +4431,23 @@ var YandexProvider = L.Layer.extend({
 		map._controlCorners.bottomright.style.marginBottom = '0em';
 	},
 
-	getAttribution: function () {
+	getAttribution: function getAttribution() {
 		return this.options.attribution;
 	},
 
-	setOpacity: function (opacity) {
+	setOpacity: function setOpacity(opacity) {
 		this.options.opacity = opacity;
 		if (opacity < 1) {
 			L.DomUtil.setOpacity(this._container, opacity);
 		}
 	},
 
-	setElementSize: function (e, size) {
+	setElementSize: function setElementSize(e, size) {
 		e.style.width = size.x + 'px';
 		e.style.height = size.y + 'px';
 	},
 
-	_initContainer: function () {
+	_initContainer: function _initContainer() {
 		var tilePane = this._map._container,
 		    first = tilePane.firstChild;
 
@@ -4254,7 +4469,7 @@ var YandexProvider = L.Layer.extend({
 		this.setElementSize(this._container, this._map.getSize());
 	},
 
-	_initMapObject: function () {
+	_initMapObject: function _initMapObject() {
 		if (this._yandex) return;
 
 		// Check that ymaps.Map is ready
@@ -4293,11 +4508,11 @@ var YandexProvider = L.Layer.extend({
 		});
 	},
 
-	_reset: function () {
+	_reset: function _reset() {
 		this._initContainer();
 	},
 
-	_update: function (force) {
+	_update: function _update(force) {
 		if (!this._yandex) return;
 		this._resize(force);
 
@@ -4310,7 +4525,7 @@ var YandexProvider = L.Layer.extend({
 		}
 	},
 
-	_resize: function (force) {
+	_resize: function _resize(force) {
 		var size = this._map.getSize(),
 		    style = this._container.style;
 		if (style.width === size.x + 'px' && style.height === size.y + 'px') if (force !== true) return;
@@ -4321,10 +4536,14 @@ var YandexProvider = L.Layer.extend({
 
 /***/ }),
 /* 38 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return RosreestrProvider; });
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 var Rosreestr = L.TileLayer.extend({
     options: {
         tileSize: 256,
@@ -4338,7 +4557,7 @@ var Rosreestr = L.TileLayer.extend({
 
     _needInitInteraction: true,
 
-    getTileUrl: function (tilePoint) {
+    getTileUrl: function getTileUrl(tilePoint) {
         var map = this._map,
             crs = map.options.crs,
             tileSize = this.options.tileSize,
@@ -4357,14 +4576,14 @@ var Rosreestr = L.TileLayer.extend({
             format: this.options.format,
             bboxSR: this.options.bboxSR,
             imageSR: this.options.imageSR,
-            size: `${this.options.tileSize},${this.options.tileSize}`,
+            size: this.options.tileSize + ',' + this.options.tileSize,
             layers: this.options.layers
         }, this._url);
 
         return this._url + paramsString;
     },
 
-    onAdd: function (map) {
+    onAdd: function onAdd(map) {
         L.TileLayer.prototype.onAdd.call(this, map);
         if (this.options.clickable) {
             L.DomUtil.addClass(this._container, 'leaflet-clickable-raster-layer');
@@ -4375,7 +4594,7 @@ var Rosreestr = L.TileLayer.extend({
         }
     },
 
-    _initInteraction: function () {
+    _initInteraction: function _initInteraction() {
         var div = this._container,
             events = ['dblclick', 'click', 'mousedown', 'mouseover', 'mouseout', 'contextmenu'];
 
@@ -4383,7 +4602,7 @@ var Rosreestr = L.TileLayer.extend({
             L.DomEvent.on(div, events[i], this._fireMouseEvent, this);
         }
     },
-    _fireMouseEvent: function (e) {
+    _fireMouseEvent: function _fireMouseEvent(e) {
         var map = this._map;
         if (map.dragging && map.dragging.moved()) {
             return;
@@ -4406,16 +4625,27 @@ L.tileLayer.rosreestr = function (url, options) {
     return new Rosreestr(url, options);
 };
 
-var RosreestrProvider = Rosreestr;
+var RosreestrProvider = exports.RosreestrProvider = Rosreestr;
 
 /***/ }),
 /* 39 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-class Manager {
 
-	constructor(params) {
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Manager = exports.Manager = function () {
+	function Manager(params) {
+		_classCallCheck(this, Manager);
+
 		this.options = params;
 		this.createLeafletMap(params.mapDivId || 'map', params.center || [60, 30], params.zoom || 12, params.zoomControl || false, params.editable || false);
 		if (params.memorize) {
@@ -4423,52 +4653,120 @@ class Manager {
 		}
 	}
 
-	createLeafletMap(mapDivId, center, zoom, zoomControl, editable) {
-		this._map = L.map(mapDivId, {
-			editable,
-			center,
-			zoom,
-			zoomControl
-		});
-	}
-
-	restoreMapPosition() {
-		let zoom, lat, lng;
-
-		const zoomState = window.localStorage.getItem("MAP_STATE_ZOOM");
-		const latState = window.localStorage.getItem("MAP_STATE_COORDINATES_LAT");
-		const lngState = window.localStorage.getItem("MAP_STATE_COORDINATES_LNG");
-
-		if (zoomState) {
-			zoom = Number(zoomState);
+	_createClass(Manager, [{
+		key: "createLeafletMap",
+		value: function createLeafletMap(mapDivId, center, zoom, zoomControl, editable) {
+			this._map = L.map(mapDivId, {
+				editable: editable,
+				center: center,
+				zoom: zoom,
+				zoomControl: zoomControl
+			});
 		}
+	}, {
+		key: "restoreMapPosition",
+		value: function restoreMapPosition() {
+			var _this = this;
 
-		if (latState && lngState) {
-			lat = Number(latState);
-			lng = Number(lngState);
+			var zoom = void 0,
+			    lat = void 0,
+			    lng = void 0;
+
+			var zoomState = window.localStorage.getItem("MAP_STATE_ZOOM");
+			var latState = window.localStorage.getItem("MAP_STATE_COORDINATES_LAT");
+			var lngState = window.localStorage.getItem("MAP_STATE_COORDINATES_LNG");
+
+			if (zoomState) {
+				zoom = Number(zoomState);
+			}
+
+			if (latState && lngState) {
+				lat = Number(latState);
+				lng = Number(lngState);
+			}
+
+			if (zoom && lat && lng) {
+				this._map.setView([lat, lng], zoom);
+			}
+
+			var saveMapState = function saveMapState() {
+				window.localStorage.setItem("MAP_STATE_ZOOM", _this._map.getZoom());
+				window.localStorage.setItem("MAP_STATE_COORDINATES_LAT", _this._map.getCenter().lat);
+				window.localStorage.setItem("MAP_STATE_COORDINATES_LNG", _this._map.getCenter().lng);
+			};
+
+			window.addEventListener("beforeunload", saveMapState);
 		}
-
-		if (zoom && lat && lng) {
-			this._map.setView([lat, lng], zoom);
+	}, {
+		key: "updateMapPosition",
+		value: function updateMapPosition(latLng, zoom) {
+			this._map.setView(latLng, zoom);
+			return this;
 		}
+	}]);
 
-		let saveMapState = () => {
-			window.localStorage.setItem("MAP_STATE_ZOOM", this._map.getZoom());
-			window.localStorage.setItem("MAP_STATE_COORDINATES_LAT", this._map.getCenter().lat);
-			window.localStorage.setItem("MAP_STATE_COORDINATES_LNG", this._map.getCenter().lng);
-		};
+	return Manager;
+}();
 
-		window.addEventListener("beforeunload", saveMapState);
-	}
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
 
-	updateMapPosition(latLng, zoom) {
-		this._map.setView(latLng, zoom);
-		return this;
-	}
+"use strict";
 
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Manager;
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var IconPulse = exports.IconPulse = L.DivIcon.extend({
+
+    options: {
+        className: '',
+        iconSize: [60, 60],
+        fillColor: '#ff6d00',
+        color: '#ff6d00',
+        radius: 4
+    },
+
+    createIcon: function createIcon(options) {
+        var div = document.createElement('div');
+        div.classList.add('pulse-container');
+        div.style.marginLeft = '-' + this.options.iconSize[0] / 2 + 'px';
+        div.style.marginTop = '-' + this.options.iconSize[1] / 2 + 'px';
+        var element = '<svg id=\'pulse-svg\' class=\'pulse-svg\' height=\'' + this.options.iconSize[0] + 'px\' width=\'' + this.options.iconSize[1] + 'px\' version=\'1.1\' viewBox=\'' + this.options.iconSize[0] / 2 + ' ' + this.options.iconSize[1] / 2 + ' ' + this.options.iconSize[0] + ' ' + this.options.iconSize[1] + '\' xmlns=\'http://www.w3.org/2000/svg\'>\n                        <circle class=\'wave first-wave\' cx=\'' + this.options.iconSize[0] + '\' cy=\'' + this.options.iconSize[1] + '\' opacity=\'0\' r=\'' + this.options.radius + '\'></circle>\n                        <circle class=\'wave second-wave\' cx=\'' + this.options.iconSize[0] + '\' cy=\'' + this.options.iconSize[1] + '\' opacity=\'0\' r=\'' + this.options.radius + '\'></circle>\n                        <g>\n                            <circle class=\'circle epicenter\' cx=\'' + this.options.iconSize[0] + '\' cy=\'' + this.options.iconSize[1] + '\' r=\'' + this.options.radius + '\'></circle>\n                        </g>\n                    </svg>';
+        var svgCss = '.pulse-svg {overflow:visible;}';
+        var epicenterCss = '.epicenter{fill:' + this.options.fillColor + ';}';
+        var waveCss = '.wave{fill: white;\n            animation: pulse-animation 2.7s linear infinite;\n            transform-origin: center center;\n            stroke: ' + this.options.color + ';\n            stroke-width: 3px}';
+        var firstWaveCss = '.first-wave{animation-delay: 1.5s;}';
+        var secondWaveCss = '.second-wave{animation-delay: 1.1s;}';
+        var keyFrame = '@keyframes pulse-animation {\n            0% {\n                r: 0;\n                opacity: 0;\n            }\n            50% {\n                opacity: 0.4;\n            }\n            70% {\n                opacity: 0.09;\n            }\n            100% {\n                r: ' + this.options.iconSize[0] / 2 + ';\n                opacity: 0;\n            }\n        }';
+
+        var animationStyleElement = document.createElement('style');
+        animationStyleElement.appendChild(document.createTextNode(svgCss + ' ' + keyFrame + ' ' + waveCss + ' ' + firstWaveCss + ' ' + secondWaveCss + ' ' + epicenterCss));
+        div.appendChild(animationStyleElement);
+        var elementFromString = new DOMParser().parseFromString(element, 'image/svg+xml');
+        elementFromString.getElementById('pulse-svg');
+        div.appendChild(elementFromString.getElementById('pulse-svg'));
+        return div;
+    }
+});
+
+var PulseMarker = exports.PulseMarker = L.Marker.extend({
+    initialize: function initialize(latlng, options) {
+        options.icon = new IconPulse(options);
+        L.Marker.prototype.initialize.call(this, latlng, options);
+    },
+    onAdd: function onAdd(map) {
+        var _this = this;
+
+        L.Marker.prototype.onAdd.call(this, map);
+        if (this.options.timeout) {
+            setTimeout(function () {
+                _this.remove();
+            }, this.options.timeout);
+        }
+    }
+});
 
 /***/ })
 /******/ ]);
