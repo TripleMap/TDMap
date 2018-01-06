@@ -1199,8 +1199,6 @@ var _TDMapUtilsGeoUtil = __webpack_require__(12);
 
 var _TDMapUtilsPromises = __webpack_require__(4);
 
-var _TDMapUtilsRosreesrtParse = __webpack_require__(13);
-
 var _TDMapToolsMeasurment = __webpack_require__(14);
 
 var _TDMapToolsSpatialFilter = __webpack_require__(15);
@@ -1216,6 +1214,8 @@ var _TDMapProviderGoogleProvider = __webpack_require__(36);
 var _TDMapProviderYandexProvider = __webpack_require__(37);
 
 var _TDMapProviderRosreestrProvider = __webpack_require__(38);
+
+var _TDMapCadastralToolsDataService = __webpack_require__(44);
 
 var _TDMapMappingManager = __webpack_require__(39);
 
@@ -1236,6 +1236,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
 // layers
+
+
+// cadastralUtils
 
 
 // complete
@@ -1260,9 +1263,10 @@ var TDMapConstructor = function TDMapConstructor() {
 	};
 	this.Utils = {
 		GeoUtil: _TDMapUtilsGeoUtil.GeoUtil,
-		Promises: _TDMapUtilsPromises.Promises,
-		CadastrSearchProviderPPK5: _TDMapUtilsRosreesrtParse.CadastrSearchProviderPPK5,
-		CadastrSearchPPK5: _TDMapUtilsRosreesrtParse.CadastrSearchPPK5
+		Promises: _TDMapUtilsPromises.Promises
+	};
+	this.cadastralUtils = {
+		CadastralSearchDataService: _TDMapCadastralToolsDataService.CadastralSearchDataService
 	};
 	this.Routing = _TDMapRoutingRouter.Routing;
 };
@@ -1306,11 +1310,9 @@ window.TDMapManager = TDMapManager;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var GeoUtil = exports.GeoUtil = L.Util.extend({
+var GeoUtil = exports.GeoUtil = {
 
-    intersectionByBBox: function intersectionByBBox(hole, polygon, map) {
-        this.map = map;
-        var that = this;
+    isHoleIntersectsPolygon: function isHoleIntersectsPolygon(hole, polygon) {
         var result = this.parseResult(this.isMultiPointInsideBBox(hole, polygon));
         if (result === 'within' || result === 'overlaps') {
             return true;
@@ -1360,369 +1362,10 @@ var GeoUtil = exports.GeoUtil = L.Util.extend({
             }
         }
     }
-});
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var random = function random() {
-	return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
 };
 
-var CadastrSearchProviderPPK5 = exports.CadastrSearchProviderPPK5 = function () {
-	function CadastrSearchProviderPPK5(map) {
-		_classCallCheck(this, CadastrSearchProviderPPK5);
-
-		this.map = map;
-	}
-
-	_createClass(CadastrSearchProviderPPK5, [{
-		key: 'getDataByMaskAsynch',
-		value: function getDataByMaskAsynch(cadNum) {
-			var d = $.Deferred();
-			var urlOptions = {
-				text: cadNum,
-				tolerance: "16391",
-				limit: 16,
-				callback: 'JQuery' + random() + random()
-			};
-
-			this[urlOptions.callback] = function (data) {};
-			$.ajax({
-				url: 'https://pkk5.rosreestr.ru/api/features/1/' + cadNum.split(':').map(function (elem) {
-					return Number(elem);
-				}).join(':'),
-				type: "GET",
-				dataType: "jsonp",
-				success: function success(response) {
-					if (!response.feature) {
-						d.resolve([], "noObjects");
-						return;
-					}
-					if (response.feature.center && response.feature.extent) {
-						var cords = L.Projection.SphericalMercator.unproject(L.point(response.feature.center.x, response.feature.center.y));
-						var obj = {
-							type: "Feature",
-							geojson: {
-								type: "Point",
-								coordinates: [cords[Object.keys(cords)[1]], cords[Object.keys(cords)[0]]]
-							},
-							properties: response.feature.attrs
-						};
-						obj.properties.extent = response.feature.extent;
-						obj.properties.center = response.feature.center;
-						d.resolve([obj], "withCoords");
-					} else {
-						d.resolve([{
-							type: "Feature",
-							properties: {
-								cn: response.feature.attrs.cn,
-								id: response.feature.attrs.id
-							}
-						}], "withoutCoords");
-					}
-				},
-				error: function error(_error) {
-					d.reject(" Failed: " + _error);
-				}
-			});
-
-			return d.promise();
-		}
-	}, {
-		key: 'getPointsOfImageByMaskAsynch',
-		value: function getPointsOfImageByMaskAsynch(cadnum, options) {
-			var d = $.Deferred();
-			var urlOptions = {
-				dpi: "96",
-				transparent: "true",
-				format: "png32",
-				layers: "show:6,7",
-				bbox: options.bbox3857,
-				bboxSR: options.bboxSR,
-				imageSR: options.imageSR,
-				size: options.size,
-				layerDefs: JSON.stringify({
-					"6": 'ID = \'' + cadnum + '\'',
-					"7": 'ID = \'' + cadnum + '\''
-				}),
-				f: "image"
-			};
-
-			$.ajax({
-				url: "http://pkk5.rosreestr.ru/arcgis/rest/services/Cadastre/CadastreSelected/MapServer/export?",
-				type: "GET",
-				data: urlOptions,
-				success: function success(data) {
-					var image = new Image();
-					image.setAttribute("crossOrigin", "anonymous");
-					image.onload = function () {
-						var pathPoints = MSQR(image, {
-							tolerance: 1.5,
-							path2D: true,
-							maxShapes: 25
-						});
-
-						var c = document.createElement("canvas");
-						c.width = image.width;
-						c.height = image.height;
-
-						var ctx = c.getContext("2d");
-						ctx.drawImage(image, 0, 0);
-						ctx.fillStyle = "rgb(255, 255, 0)";
-						ctx.beginPath();
-
-						for (var z = 0; z < pathPoints.length; z++) {
-							if (pathPoints[z].length > 3) {
-								for (var i = 0; i < pathPoints[z].length; i++) {
-									if (i === 0) {
-										ctx.moveTo(pathPoints[z][i].x, pathPoints[z][i].y);
-									} else if (i === pathPoints[z].length) {
-										ctx.lineTo(pathPoints[z][i].x, pathPoints[z][i].y);
-									} else {
-										ctx.lineTo(pathPoints[z][i].x, pathPoints[z][i].y);
-									}
-								}
-							}
-						}
-
-						ctx.rect(0, 0, image.width, image.height);
-						ctx.fill();
-
-						var imgData = ctx.getImageData(0, 0, image.width, image.height);
-						for (var d = 0; d < imgData.data.length; d += 4) {
-							if (imgData.data[d + 3] === 0) {
-								imgData.data[d] = 255;
-								imgData.data[d + 1] = 0;
-								imgData.data[d + 2] = 0;
-								imgData.data[d + 3] = 255;
-							} else {
-								imgData.data[d] = 0;
-								imgData.data[d + 1] = 0;
-								imgData.data[d + 2] = 0;
-								imgData.data[d + 3] = 0;
-							}
-						}
-						ctx.putImageData(imgData, 0, 0);
-
-						var pinPoints = MSQR(ctx, {
-							tolerance: 1.5,
-							path2D: true,
-							maxShapes: 100
-						});
-
-						var polygons = pathPoints.filter(function (item) {
-							return item.length > 2 ? item : false;
-						});
-						var holes = pinPoints.filter(function (item) {
-							return item.length > 2 ? item : false;
-						});
-
-						d.resolve(polygons, holes, image.width, image.height, urlOptions.bbox);
-					};
-					image.src = this.url;
-				},
-				error: function error(_error2) {
-					d.reject(" Failed: " + _error2);
-				}
-			});
-			return d.promise();
-		}
-	}, {
-		key: 'getDataByLocationAsynch',
-		value: function getDataByLocationAsynch(lngLatString) {
-			var d = $.Deferred();
-			getDataFromServer();
-
-			function getDataFromServer() {
-				var urlOptions = {
-					text: lngLatString,
-					tolerance: "16",
-					limit: 11,
-					callback: "JQuery" + random() + random()
-				};
-
-				this[urlOptions.callback] = function (data) {};
-				$.ajax({
-					url: "https://pkk5.rosreestr.ru/api/features/1?",
-					type: "GET",
-					data: urlOptions,
-					dataType: "jsonp",
-					jsonpCallback: urlOptions.callback,
-					crossDomain: true,
-					success: function success(response) {
-						if (!response.features.length) {
-							d.resolve([]);
-							return;
-						}
-						var result = response.features.map(function (item) {
-							var cords = L.Projection.SphericalMercator.unproject(L.point(item.center.x, item.center.y));
-							return {
-								display_name: item.attrs.address,
-								type: "Feature",
-								geojson: {
-									type: "Point",
-									coordinates: [cords[Object.keys(cords)[1]], cords[Object.keys(cords)[0]]]
-								},
-								properties: {
-									address: item.attrs.address,
-									cn: item.attrs.cn,
-									id: item.attrs.id,
-									extent: item.extent,
-									type: item.type
-								}
-							};
-						});
-
-						d.resolve(result);
-					},
-					error: function error(_error3) {
-						d.reject(_error3);
-					}
-				});
-			}
-			return d.promise();
-		}
-	}]);
-
-	return CadastrSearchProviderPPK5;
-}();
-
-var CadastrSearchPPK5 = exports.CadastrSearchPPK5 = function () {
-	function CadastrSearchPPK5(map, options) {
-		_classCallCheck(this, CadastrSearchPPK5);
-
-		this.map = map;
-		this.options = options;
-		this.pkk5Provider = new CadastrSearchProviderPPK5(this.map);
-	}
-
-	_createClass(CadastrSearchPPK5, [{
-		key: 'getGeoJsonByCadNum',
-		value: function getGeoJsonByCadNum(cadNum) {
-			var d = $.Deferred();
-			var that = this;
-			this.pkk5Provider.getDataByMaskAsynch(cadNum).then(function (data, type) {
-				var requestResult = data;
-				if (type === "withCoords") {
-					var bbox = [data[0].properties.extent.xmin, data[0].properties.extent.ymin, data[0].properties.extent.xmax, data[0].properties.extent.ymax];
-					var strBbox = bbox.join();
-					var bounds = new L.latLngBounds(L.Projection.SphericalMercator.unproject(new L.point(data[0].properties.extent.xmin, data[0].properties.extent.ymax)), L.Projection.SphericalMercator.unproject(new L.point(data[0].properties.extent.xmax, data[0].properties.extent.ymin)));
-
-					var newBoundsNorthEast = that.map.getPixelBounds(bounds._northEast, 18);
-					var newBoundsSouthWest = that.map.getPixelBounds(bounds._southWest, 18);
-					var futureNE = {
-						x: newBoundsNorthEast.min.x + that.map.getSize().x / 2,
-						y: newBoundsNorthEast.min.y + that.map.getSize().y / 2
-					};
-					var futureSW = {
-						x: newBoundsSouthWest.min.x + that.map.getSize().x / 2,
-						y: newBoundsSouthWest.min.y + that.map.getSize().y / 2
-					};
-
-					var futureHight = futureSW.y - futureNE.y;
-					var futureWidth = futureNE.x - futureSW.x;
-
-					var kW, kH;
-					futureHight / 4096 > 1 ? kH = futureHight / 4096 : kH = 1;
-					futureWidth / 4096 > 1 ? kW = futureWidth / 4096 : kW = 1;
-
-					var d = [kW, kH].sort();
-					var size = [futureWidth / d[1], futureHight / d[1]];
-					var strSize = size.join();
-
-					that.pkk5Provider.getPointsOfImageByMaskAsynch(data[0].properties.id, {
-						bbox3857: strBbox,
-						bboxSR: "3857",
-						imageSR: "3857",
-						size: strSize
-					}).then(function (data, holes) {
-						var geometry = {
-							type: "MultiPolygon",
-							coordinates: []
-						};
-						for (var v = 0; v < data.length; v++) {
-							var polygon = [];
-							var exterior = [];
-							for (var m = 0; m < data[v].length; m++) {
-								var point = L.point(data[v][m].x * d[1] + futureSW.x, data[v][m].y * d[1] + futureNE.y);
-								exterior.push([that.map.unproject(point, 18).lng, that.map.unproject(point, 18).lat]);
-							}
-							if (data[v].length > 0) {
-								var lastPoint = L.point(data[v][0].x * d[1] + futureSW.x, data[v][0].y * d[1] + futureNE.y);
-								exterior.push([that.map.unproject(lastPoint, 18).lng, that.map.unproject(lastPoint, 18).lat]);
-							}
-
-							polygon.push(exterior);
-							geometry.coordinates.push(polygon);
-						}
-
-						var arrayOfHoles = [];
-						for (var h = 0; h < holes.length; h++) {
-							var hole = [];
-							for (var hh = 0; hh < holes[h].length; hh++) {
-								var holePoint = L.point(holes[h][hh].x * d[1] + futureSW.x, holes[h][hh].y * d[1] + futureNE.y);
-								hole.push([that.map.unproject(holePoint, 18).lng, that.map.unproject(holePoint, 18).lat]);
-							}
-							if (holes[h].length > 0) {
-								var lastHolePoint = L.point(holes[h][0].x * d[1] + futureSW.x, holes[h][0].y * d[1] + futureNE.y);
-								hole.push([that.map.unproject(lastHolePoint, 18).lng, that.map.unproject(lastHolePoint, 18).lat]);
-							}
-
-							arrayOfHoles.push(hole);
-						}
-
-						//проверка на пересечение
-						//проверяем каждый полигон и каждый бублик на предмет пересечения.
-						if (arrayOfHoles.length > 0) {
-							for (var p = 0; p < geometry.coordinates.length; p++) {
-								for (var ah = 0; ah < arrayOfHoles.length; ah++) {
-									var intersectResult = TDMap.Utils.GeoUtil.intersectionByBBox(arrayOfHoles[ah], geometry.coordinates[p][0], that.map);
-									if (intersectResult) {
-										geometry.coordinates[p].push(arrayOfHoles[ah]);
-									}
-								}
-							}
-						}
-
-						var o = {
-							type: "Feature",
-							geometry: geometry,
-							properties: requestResult[0].properties
-						};
-						d.resolve(o, "withCoords");
-					}, function (err) {
-						d.resolve(err, "error");
-					});
-				} else if (type === "withoutCoords") {
-					d.resolve(requestResult, "withoutCoords");
-				} else if (type === "noObjects") {
-					d.resolve(requestResult, "noObjects");
-				}
-			}, function (err) {
-				d.resolve(err, "error");
-			});
-
-			return d.promise();
-		}
-	}]);
-
-	return CadastrSearchPPK5;
-}();
-
 /***/ }),
+/* 13 */,
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4647,6 +4290,874 @@ var PulseMarker = exports.PulseMarker = L.Marker.extend({
         }
     }
 });
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.CadastralSearchProvider = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _TDMapCadastralToolsImageVectorize = __webpack_require__(42);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var random = function random() {
+	return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+};
+
+var CadastralSearchProvider = exports.CadastralSearchProvider = function () {
+	function CadastralSearchProvider(map) {
+		_classCallCheck(this, CadastralSearchProvider);
+
+		this.map = map;
+		this.typeAheadUrl = "http://pkk5.rosreestr.ru/api/typeahead";
+		this.featuresUrl = "http://pkk5.rosreestr.ru/api/features";
+		this.featuresTypes = {
+			PARCEL: 1,
+			OKS: 5
+		};
+		this.imageVectorize = new _TDMapCadastralToolsImageVectorize.ImageVectorize();
+	}
+
+	_createClass(CadastralSearchProvider, [{
+		key: "getFeatureByCadastralNumber",
+		value: function getFeatureByCadastralNumber(cadNum, cadObjType) {
+			var _this = this;
+
+			var urlOptions = {
+				text: cadNum,
+				tolerance: "16391",
+				limit: 16,
+				callback: "JQuery" + random() + random()
+			};
+			this[urlOptions.callback] = function (data) {};
+
+			return new Promise(function (resolve, reject) {
+				var dataUrl = _this.featuresUrl + "/" + _this.featuresTypes[cadObjType] + "/" + cadNum.split(':').map(function (elem) {
+					return Number(elem);
+				}).join(':');
+				return $.ajax({
+					url: dataUrl,
+					type: "GET",
+					dataType: "jsonp",
+					success: function success(response) {
+						if (!response.feature) {
+							resolve(false);
+							return;
+						}
+						if (!response.feature.center && !response.feature.extent) {
+							resolve({
+								type: "Feature",
+								properties: {
+									cn: response.feature.attrs.cn,
+									id: response.feature.attrs.id
+								}
+							}, "withoutCoords");
+							return;
+						}
+
+						var cords = L.Projection.SphericalMercator.unproject(L.point(response.feature.center.x, response.feature.center.y));
+						var obj = {
+							type: "Feature",
+							geojson: {
+								type: "Point",
+								coordinates: [cords[Object.keys(cords)[1]], cords[Object.keys(cords)[0]]]
+							},
+							properties: response.feature.attrs
+						};
+						obj.properties.extent = response.feature.extent;
+						obj.properties.center = response.feature.center;
+						resolve(obj, "withCoords");
+					},
+					error: function error(_error) {
+						return reject(_error);
+					}
+				});
+			});
+		}
+	}, {
+		key: "getImageByCadastralNumber",
+		value: function getImageByCadastralNumber(cadnum, strBbox, strSize, futureSW, futureNE) {
+			var urlOptions = {
+				dpi: "96",
+				transparent: "true",
+				format: "png32",
+				layers: "show:6,7",
+				bbox: strBbox,
+				bboxSR: "3857",
+				imageSR: "3857",
+				size: strSize,
+				layerDefs: JSON.stringify({
+					"6": "ID = '" + cadnum + "'",
+					"7": "ID = '" + cadnum + "'"
+				}),
+				f: "image"
+			};
+			var self = this;
+			return new Promise(function (resolve, reject) {
+				$.ajax({
+					url: "http://pkk5.rosreestr.ru/arcgis/rest/services/Cadastre/CadastreSelected/MapServer/export?",
+					type: "GET",
+					data: urlOptions,
+					success: function success(data) {
+						var image = new Image();
+						image.setAttribute("crossOrigin", "anonymous");
+						image.onload = function () {
+							var geometry = self.imageVectorize.pkkImageToGeoJSON(image, self.map, futureSW, futureNE, 18);
+							resolve(geometry, image.width, image.height, urlOptions.bbox);
+						};
+						image.onerror = function (error) {
+							return reject(error);
+						};
+						image.src = this.url;
+					},
+					error: function error(_error2) {
+						return reject(_error2);
+					}
+				});
+			});
+		}
+	}, {
+		key: "getFeaturesByLocation",
+		value: function getFeaturesByLocation(lngLatString, cadObjType) {
+			var _this2 = this;
+
+			return new Promise(function (resolve, reject) {
+				var urlOptions = {
+					text: lngLatString,
+					tolerance: "16",
+					limit: 11,
+					callback: "JQuery" + random() + random()
+				};
+
+				_this2[urlOptions.callback] = function (data) {};
+				var dataUrl = _this2.featuresUrl + "/" + _this2.featuresTypes[cadObjType] + "?";
+				$.ajax({
+					url: dataUrl,
+					type: "GET",
+					data: urlOptions,
+					dataType: "jsonp",
+					jsonpCallback: urlOptions.callback,
+					success: function success(response) {
+						if (!response.features.length) {
+							resolve([]);
+							return;
+						}
+						var result = response.features.map(function (item) {
+							var cords = L.Projection.SphericalMercator.unproject(L.point(item.center.x, item.center.y));
+							return {
+								display_name: item.attrs.address,
+								type: "Feature",
+								geojson: {
+									type: "Point",
+									coordinates: [cords[Object.keys(cords)[1]], cords[Object.keys(cords)[0]]]
+								},
+								properties: {
+									address: item.attrs.address,
+									cn: item.attrs.cn,
+									id: item.attrs.id,
+									extent: item.extent,
+									type: item.type
+								}
+							};
+						});
+
+						resolve(result);
+					},
+					error: function error(_error3) {
+						return reject(_error3);
+					}
+				});
+			});
+		}
+	}, {
+		key: "getTypeAheadFeatures",
+		value: function getTypeAheadFeatures(text, limit, type) {
+			var _this3 = this;
+
+			return new Promise(function (resolve, reject) {
+				if (!text) {
+					resolve(null);
+					return;
+				}
+
+				$.get(_this3.typeAheadUrl, {
+					data: {
+						text: text,
+						limit: limit || 10,
+						type: _this3.featuresTypes[type] || 1
+					},
+					success: function success(response) {
+						return resolve(response);
+					},
+					error: function error(_error4) {
+						return reject(_error4);
+					}
+				});
+			});
+		}
+	}]);
+
+	return CadastralSearchProvider;
+}();
+
+;
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.ImageVectorize = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _msqr = __webpack_require__(43);
+
+var _TDMapUtilsGeoUtil = __webpack_require__(12);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ImageVectorize = exports.ImageVectorize = function () {
+    function ImageVectorize() {
+        _classCallCheck(this, ImageVectorize);
+    }
+
+    _createClass(ImageVectorize, [{
+        key: 'pkkImageToGeoJSON',
+        value: function pkkImageToGeoJSON(image, map, deltaSW, deltaNE, zoom) {
+            // получаем список точек первого обхода
+            var pathPoints = (0, _msqr.MSQR)(image, {
+                tolerance: 1.5,
+                path2D: true,
+                maxShapes: 25
+            });
+            var polygons = pathPoints.filter(function (item) {
+                return item.length > 2 ? item : false;
+            });
+
+            // инвертируем растр для получения "дырок"
+            // создаем новый канвас и на нем отрисовываем послойно инверсию
+            var canvas = document.createElement("canvas");
+            canvas.width = image.width;
+            canvas.height = image.height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(image, 0, 0);
+            ctx.fillStyle = "rgb(255, 255, 0)";
+            ctx.beginPath();
+            // сначала отрисовываем, то что было за границей первого обхода в желтый цвет
+            for (var z = 0; z < pathPoints.length; z++) {
+                if (pathPoints[z].length > 3) {
+                    for (var i = 0; i < pathPoints[z].length; i++) {
+                        if (i === 0) {
+                            ctx.moveTo(pathPoints[z][i].x, pathPoints[z][i].y);
+                        } else if (i === pathPoints[z].length) {
+                            ctx.lineTo(pathPoints[z][i].x, pathPoints[z][i].y);
+                        } else {
+                            ctx.lineTo(pathPoints[z][i].x, pathPoints[z][i].y);
+                        }
+                    }
+                }
+            }
+            ctx.rect(0, 0, image.width, image.height);
+            ctx.fill();
+            // инвертируем границы и бублики в целом
+            var imgData = ctx.getImageData(0, 0, image.width, image.height);
+            for (var _d = 0; _d < imgData.data.length; _d += 4) {
+                if (imgData.data[_d + 3] === 0) {
+                    imgData.data[_d] = 255;
+                    imgData.data[_d + 1] = 0;
+                    imgData.data[_d + 2] = 0;
+                    imgData.data[_d + 3] = 255;
+                } else {
+                    imgData.data[_d] = 0;
+                    imgData.data[_d + 1] = 0;
+                    imgData.data[_d + 2] = 0;
+                    imgData.data[_d + 3] = 0;
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            // получаем список точек второго обхода
+            var holes = (0, _msqr.MSQR)(ctx, {
+                tolerance: 1.5,
+                path2D: true,
+                maxShapes: 100
+            }).filter(function (item) {
+                return item.length > 2 ? item : false;
+            });
+
+            var geometry = {
+                type: "MultiPolygon",
+                coordinates: []
+            };
+            geometry.coordinates = polygons.map(function (polygonItem) {
+                var exterior = polygonItem.map(function (item) {
+                    var polygonPoint = L.point(item.x * d[1] + deltaSW.x, item.y * d[1] + deltaNE.y);
+                    return [map.unproject(polygonPoint, zoom).lng, map.unproject(polygonPoint, zoom).lat];
+                });
+                if (polygonItem.length) exterior.push(exterior[0]);
+                return [exterior];
+            });
+
+            var arrayOfHoles = holes.map(function (holeItem) {
+                var hole = holeItem.map(function (item) {
+                    var holePoint = L.point(item.x * d[1] + deltaSW.x, item.y * d[1] + deltaNE.y);
+                    return [map.unproject(holePoint, zoom).lng, map.unproject(holePoint, zoom).lat];
+                });
+                if (holeItem.length) hole.push(hole[0]);
+
+                return hole;
+            });
+
+            //проверка на пересечение
+            //проверяем каждый полигон и каждый бублик на предмет пересечения.
+            if (arrayOfHoles.length > 0) {
+                for (var p = 0; p < geometry.coordinates.length; p++) {
+                    for (var ah = 0; ah < arrayOfHoles.length; ah++) {
+                        var intersectResult = _TDMapUtilsGeoUtil.GeoUtil.isHoleIntersectsPolygon(arrayOfHoles[ah], geometry.coordinates[p][0]);
+                        if (intersectResult) {
+                            geometry.coordinates[p].push(arrayOfHoles[ah]);
+                        }
+                    }
+                }
+            }
+            return geometry;
+        }
+    }]);
+
+    return ImageVectorize;
+}();
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var MSQR = exports.MSQR = function MSQR(src, options) {
+
+    "use strict";
+
+    options = options || {};
+
+    var ctx;
+
+    if (src instanceof CanvasRenderingContext2D) {
+        ctx = src;
+    } else if (src instanceof HTMLCanvasElement) {
+        ctx = src.getContext("2d");
+    } else if (src instanceof HTMLImageElement || src instanceof HTMLVideoElement) {
+        ctx = img2context(src);
+    } else throw "Invalid source.";
+
+    var w = ctx.canvas.width,
+        h = ctx.canvas.height,
+        cx = (options.x || 0) | 0,
+        cy = (options.y || 0) | 0,
+        cw = (options.width || w) | 0,
+        ch = (options.height || h) | 0,
+        bu,
+        paths = [],
+        path,
+        insides = [],
+        inside,
+        lastPos = 3,
+        i,
+        pt,
+        // for recursive calls
+    bleed = Math.max(1, options.bleed || 5),
+        max = Math.max(1, options.maxShapes || 1),
+        alpha = Math.max(0, Math.min(254, options.alpha || 0)),
+        padding = options.padding || 0,
+        tolerance = Math.max(0, options.tolerance || 0),
+        doAlign = !!options.align,
+        alignWeight = options.alignWeight || 0.95,
+        retPath = !!options.path2D,
+        dop = options.dop,
+        ctx2,
+        inc;
+
+    if (cx < 0 || cy < 0 || cx >= w || cy >= h || cw < 1 || ch < 1 || cx + cw > w || cy + ch > h) return [];
+
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = ctx.strokeStyle = "#000";
+    ctx.globalAlpha = 1;
+    ctx.shadowColor = "rgba(0,0,0,0)";
+
+    // loop to find each shape
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.lineWidth = bleed;
+    ctx.miterLimit = 1;
+
+    do {
+        path = trace();
+        if (path.length) {
+            // add to list
+            if (path.length > 3) {
+                paths.push(path);
+            }
+            // remove traced shape
+            ctx.beginPath();
+            i = path.length - 1;
+            while (pt = path[i--]) {
+                ctx.lineTo(pt.x, pt.y);
+            };
+
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+    } while (path.length && --max);
+
+    return paths;
+
+    function trace() {
+
+        var path = [],
+            data,
+            l,
+            i,
+            x,
+            y,
+            sx,
+            sy,
+            start = -1,
+            step,
+            pStep = 9,
+            steps = [9, 0, 3, 3, 2, 0, 9, 3, 1, 9, 1, 1, 2, 0, 2, 9];
+
+        data = new Uint32Array(ctx.getImageData(cx, cy, cw, ch).data.buffer);
+        l = data.length;
+        for (i = lastPos; i < l; i++) {
+            if (data[i] >>> 24 > alpha) {
+                start = lastPos = i;
+                break;
+            }
+        }
+
+        if (start >= 0) {
+
+            x = sx = start % cw | 0;
+            y = sy = start / cw | 0;
+
+            do {
+                step = getNextStep(x, y);
+                if (step === 0) y--;else if (step === 1) y++;else if (step === 2) x--;else if (step === 3) x++;
+
+                if (step !== pStep) {
+                    path.push({
+                        x: x + cx,
+                        y: y + cy
+                    });
+                    pStep = step;
+                }
+            } while (x !== sx || y !== sy);
+            if (tolerance) path = reduce(path, tolerance);
+
+            if (doAlign && !padding) path = align(path, alignWeight);
+        }
+
+        function getState(x, y) {
+            return x >= 0 && y >= 0 && x < cw && y < ch ? data[y * cw + x] >>> 24 > alpha : false;
+        }
+
+        function getNextStep(x, y) {
+
+            var v = 0;
+            if (getState(x - 1, y - 1)) v |= 1;
+            if (getState(x, y - 1)) v |= 2;
+            if (getState(x - 1, y)) v |= 4;
+            if (getState(x, y)) v |= 8;
+
+            if (v === 6) return pStep === 0 ? 2 : 3;else if (v === 9) return pStep === 3 ? 0 : 1;else return steps[v];
+        }
+
+        function reduce(points, epsilon) {
+
+            var len1 = points.length - 1;
+            if (len1 < 2) return points;
+
+            var fPoint = points[0],
+                lPoint = points[len1],
+                epsilon2 = epsilon * epsilon,
+                i,
+                index = -1,
+                cDist,
+                dist = 0,
+                l1,
+                l2,
+                r1,
+                r2;
+
+            for (i = 1; i < len1; i++) {
+                cDist = distPointToLine(points[i], fPoint, lPoint);
+                if (cDist > dist) {
+                    dist = cDist;
+                    index = i;
+                }
+            }
+
+            if (dist > epsilon2) {
+                l1 = points.slice(0, index + 1);
+                l2 = points.slice(index);
+                r1 = reduce(l1, epsilon);
+                r2 = reduce(l2, epsilon);
+                return r1.slice(0, r1.length - 1).concat(r2);
+            } else return [fPoint, lPoint];
+        }
+
+        function distPointToLine(p, l1, l2) {
+
+            var lLen = dist(l1, l2),
+                t;
+
+            if (!lLen) return 0;
+
+            t = ((p.x - l1.x) * (l2.x - l1.x) + (p.y - l1.y) * (l2.y - l1.y)) / lLen;
+
+            if (t < 0) return dist(p, l1);else if (t > 1) return dist(p, l2);else return dist(p, {
+                x: l1.x + t * (l2.x - l1.x),
+                y: l1.y + t * (l2.y - l1.y)
+            });
+        }
+
+        function dist(p1, p2) {
+            var dx = p1.x - p2.x,
+                dy = p1.y - p2.y;
+            return dx * dx + dy * dy;
+        }
+
+        function align(points, w) {
+
+            var ox = [1, -1, -1, 1],
+                oy = [1, 1, -1, -1],
+                p,
+                t = 0;
+
+            while (p = points[t++]) {
+
+                p.x = Math.round(p.x);
+                p.y = Math.round(p.y);
+
+                for (var i = 0, tx, ty, dx, dy; i < 4; i++) {
+                    dx = ox[i];
+                    dy = oy[i];
+                    tx = p.x + (dx << 1);
+                    ty = p.y + (dy << 1);
+                    if (tx > cx && ty > cy && tx < cw - 1 && ty < ch - 1) {
+                        if (!getState(tx, ty)) {
+                            tx -= dx;
+                            ty -= dy;
+                            if (getState(tx, ty)) {
+                                p.x += dx * w;
+                                p.y += dy * w;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return points;
+        }
+
+        return path;
+    }
+
+    function img2context(src) {
+        var c = document.createElement("canvas"),
+            ctx;
+        c.width = src.naturalWidth || src.videoWidth || src.width;
+        c.height = src.naturalHeight || src.videoHeight || src.height;
+        ctx = c.getContext("2d");
+        ctx.drawImage(src, 0, 0);
+        return ctx;
+    }
+};
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.CadastralSearchDataService = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _TDMapCadastralToolsDataProvider = __webpack_require__(41);
+
+var _Observable = __webpack_require__(6);
+
+__webpack_require__(45);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var CadastralSearchDataService = exports.CadastralSearchDataService = function () {
+	function CadastralSearchDataService(map) {
+		_classCallCheck(this, CadastralSearchDataService);
+
+		this.map = map;
+		this.cadastralSearchProvider = new _TDMapCadastralToolsDataProvider.CadastralSearchProvider(map);
+	}
+
+	_createClass(CadastralSearchDataService, [{
+		key: 'getGeoJsonByCadNum',
+		value: function getGeoJsonByCadNum(cadNum, cadObjType) {
+			var _this = this;
+
+			return _Observable.Observable.fromPromise(new Promise(function (resolve, reject) {
+				_this.cadastralSearchProvider.getDataByCadastralNumber(cadNum, cadObjType).then(function (data, type) {
+					if (type === "withoutCoords") {
+						resolve(data, "withoutCoords");
+						return;
+					}
+					if (type === "noObjects") {
+						resolve(data, "noObjects");
+						return;
+					}
+					if (type === "withCoords") {
+						var bbox = [data.properties.extent.xmin, data.properties.extent.ymin, data.properties.extent.xmax, data.properties.extent.ymax];
+						var strBbox = bbox.join();
+						var bounds = new L.latLngBounds(L.Projection.SphericalMercator.unproject(new L.point(data.properties.extent.xmin, data.properties.extent.ymax)), L.Projection.SphericalMercator.unproject(new L.point(data.properties.extent.xmax, data.properties.extent.ymin)));
+
+						var newBoundsNorthEast = _this.map.getPixelBounds(bounds._northEast, 18);
+						var newBoundsSouthWest = _this.map.getPixelBounds(bounds._southWest, 18);
+						var futureNE = {
+							x: newBoundsNorthEast.min.x + _this.map.getSize().x / 2,
+							y: newBoundsNorthEast.min.y + _this.map.getSize().y / 2
+						};
+						var futureSW = {
+							x: newBoundsSouthWest.min.x + _this.map.getSize().x / 2,
+							y: newBoundsSouthWest.min.y + _this.map.getSize().y / 2
+						};
+
+						var futureHight = futureSW.y - futureNE.y;
+						var futureWidth = futureNE.x - futureSW.x;
+
+						var kW = void 0,
+						    kH = void 0;
+						futureHight / 4096 > 1 ? kH = futureHight / 4096 : kH = 1;
+						futureWidth / 4096 > 1 ? kW = futureWidth / 4096 : kW = 1;
+
+						var d = [kW, kH].sort();
+						var size = [futureWidth / d[1], futureHight / d[1]];
+						var strSize = size.join();
+
+						_this.cadastralSearchProvider.getImageByCadastralNumber(data.properties.id, strBbox, strSize, futureSW, futureNE).then(function (geometry) {
+							resolve({
+								type: "Feature",
+								geometry: geometry,
+								properties: data.properties
+							}, "withCoords");
+						}, function (error) {
+							return reject(error);
+						});
+					}
+				}, function (error) {
+					return reject(error);
+				});
+			}));
+		}
+	}, {
+		key: 'getFeatureByCadastralNumber',
+		value: function getFeatureByCadastralNumber(cadNum, cadObjType) {
+			return _Observable.Observable.fromPromise(this.cadastralSearchProvider.getFeatureByCadastralNumber(cadNum, cadObjType || PARCEL));
+		}
+	}, {
+		key: 'getFeaturesByLocation',
+		value: function getFeaturesByLocation(latLng, cadObjType) {
+			var lngLatString = latLng instanceof L.LatLng ? latLng.lng + ',' + latLng.lat : latLng;
+			return _Observable.Observable.fromPromise(this.cadastralSearchProvider.getFeatureByLocation(lngLatString, cadObjType || PARCEL));
+		}
+	}, {
+		key: 'getTypeAheadFeatures',
+		value: function getTypeAheadFeatures(text, limit, cadObjType) {
+			return _Observable.Observable.fromPromise(this.cadastralSearchProvider.getFeatureByLocation(text, limit, cadObjType || PARCEL));
+		}
+	}]);
+
+	return CadastralSearchDataService;
+}();
+
+;
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Observable_1 = __webpack_require__(6);
+var fromPromise_1 = __webpack_require__(46);
+Observable_1.Observable.fromPromise = fromPromise_1.fromPromise;
+//# sourceMappingURL=fromPromise.js.map
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var PromiseObservable_1 = __webpack_require__(47);
+exports.fromPromise = PromiseObservable_1.PromiseObservable.create;
+//# sourceMappingURL=fromPromise.js.map
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __extends = undefined && undefined.__extends || function (d, b) {
+    for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+    }function __() {
+        this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var root_1 = __webpack_require__(0);
+var Observable_1 = __webpack_require__(6);
+/**
+ * We need this JSDoc comment for affecting ESDoc.
+ * @extends {Ignored}
+ * @hide true
+ */
+var PromiseObservable = function (_super) {
+    __extends(PromiseObservable, _super);
+    function PromiseObservable(promise, scheduler) {
+        _super.call(this);
+        this.promise = promise;
+        this.scheduler = scheduler;
+    }
+    /**
+     * Converts a Promise to an Observable.
+     *
+     * <span class="informal">Returns an Observable that just emits the Promise's
+     * resolved value, then completes.</span>
+     *
+     * Converts an ES2015 Promise or a Promises/A+ spec compliant Promise to an
+     * Observable. If the Promise resolves with a value, the output Observable
+     * emits that resolved value as a `next`, and then completes. If the Promise
+     * is rejected, then the output Observable emits the corresponding Error.
+     *
+     * @example <caption>Convert the Promise returned by Fetch to an Observable</caption>
+     * var result = Rx.Observable.fromPromise(fetch('http://myserver.com/'));
+     * result.subscribe(x => console.log(x), e => console.error(e));
+     *
+     * @see {@link bindCallback}
+     * @see {@link from}
+     *
+     * @param {PromiseLike<T>} promise The promise to be converted.
+     * @param {Scheduler} [scheduler] An optional IScheduler to use for scheduling
+     * the delivery of the resolved value (or the rejection).
+     * @return {Observable<T>} An Observable which wraps the Promise.
+     * @static true
+     * @name fromPromise
+     * @owner Observable
+     */
+    PromiseObservable.create = function (promise, scheduler) {
+        return new PromiseObservable(promise, scheduler);
+    };
+    PromiseObservable.prototype._subscribe = function (subscriber) {
+        var _this = this;
+        var promise = this.promise;
+        var scheduler = this.scheduler;
+        if (scheduler == null) {
+            if (this._isScalar) {
+                if (!subscriber.closed) {
+                    subscriber.next(this.value);
+                    subscriber.complete();
+                }
+            } else {
+                promise.then(function (value) {
+                    _this.value = value;
+                    _this._isScalar = true;
+                    if (!subscriber.closed) {
+                        subscriber.next(value);
+                        subscriber.complete();
+                    }
+                }, function (err) {
+                    if (!subscriber.closed) {
+                        subscriber.error(err);
+                    }
+                }).then(null, function (err) {
+                    // escape the promise trap, throw unhandled errors
+                    root_1.root.setTimeout(function () {
+                        throw err;
+                    });
+                });
+            }
+        } else {
+            if (this._isScalar) {
+                if (!subscriber.closed) {
+                    return scheduler.schedule(dispatchNext, 0, { value: this.value, subscriber: subscriber });
+                }
+            } else {
+                promise.then(function (value) {
+                    _this.value = value;
+                    _this._isScalar = true;
+                    if (!subscriber.closed) {
+                        subscriber.add(scheduler.schedule(dispatchNext, 0, { value: value, subscriber: subscriber }));
+                    }
+                }, function (err) {
+                    if (!subscriber.closed) {
+                        subscriber.add(scheduler.schedule(dispatchError, 0, { err: err, subscriber: subscriber }));
+                    }
+                }).then(null, function (err) {
+                    // escape the promise trap, throw unhandled errors
+                    root_1.root.setTimeout(function () {
+                        throw err;
+                    });
+                });
+            }
+        }
+    };
+    return PromiseObservable;
+}(Observable_1.Observable);
+exports.PromiseObservable = PromiseObservable;
+function dispatchNext(arg) {
+    var value = arg.value,
+        subscriber = arg.subscriber;
+    if (!subscriber.closed) {
+        subscriber.next(value);
+        subscriber.complete();
+    }
+}
+function dispatchError(arg) {
+    var err = arg.err,
+        subscriber = arg.subscriber;
+    if (!subscriber.closed) {
+        subscriber.error(err);
+    }
+}
+//# sourceMappingURL=PromiseObservable.js.map
 
 /***/ })
 /******/ ]);

@@ -1,8 +1,6 @@
 // utils
 import { GeoUtil } from "./utils/TDMap.Utils.GeoUtil.js";
 import { Promises } from "./utils/TDMap.Utils.Promises.js";
-import { CadastrSearchProviderPPK5 } from "./utils/TDMap.Utils.rosreesrtParse.js";
-import { CadastrSearchPPK5 } from "./utils/TDMap.Utils.rosreesrtParse.js";
 
 // tools
 import { MeasurmentUtils, Measurment } from "./tools/TDMap.Tools.Measurment.js";
@@ -19,6 +17,9 @@ import { GeoJSONService } from "./providers/TDMap.Provider.GeoJSONProvider/TDMap
 import { GoogleProvider } from "./providers/TDMap.Provider.GoogleProvider.js";
 import { YandexProvider } from "./providers/TDMap.Provider.YandexProvider.js";
 import { RosreestrProvider } from "./providers/TDMap.Provider.RosreestrProvider.js";
+
+// cadastralUtils
+import { CadastralSearchDataService } from './cadastralTools/TDMap.CadastralTools.DataService.js';
 
 // complete
 class TDMapConstructor {
@@ -41,10 +42,11 @@ class TDMapConstructor {
 		};
 		this.Utils = {
 			GeoUtil,
-			Promises,
-			CadastrSearchProviderPPK5,
-			CadastrSearchPPK5
+			Promises
 		};
+		this.CadastralUtils = {
+			CadastralSearchDataService
+		}
 		this.Routing = Routing;
 	}
 }

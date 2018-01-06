@@ -1,8 +1,6 @@
-export var GeoUtil = L.Util.extend({
+export const GeoUtil = {
 
-    intersectionByBBox: function(hole, polygon, map) {
-        this.map = map;
-        var that = this;
+    isHoleIntersectsPolygon: function(hole, polygon) {
         var result = this.parseResult(this.isMultiPointInsideBBox(hole, polygon));
         if (result === 'within' || result === 'overlaps') {
             return true;
@@ -52,4 +50,4 @@ export var GeoUtil = L.Util.extend({
             }
         }
     }
-});
+};
