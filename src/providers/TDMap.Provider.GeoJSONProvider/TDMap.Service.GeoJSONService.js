@@ -15,7 +15,7 @@ import 'rxjs/add/operator/map';
 
 
 export var GeoJSONService = L.GeoJSON.extend({
-    // стили приходят с сервера feature.properies.style
+    // стили приходят с сервера feature.properties.style
     // стили пользователя хранятся на сервере с привязкой к атрибуту
     initialize: function(options) {
         L.setOptions(this, options);
@@ -80,7 +80,7 @@ export var GeoJSONService = L.GeoJSON.extend({
     },
 
     filterData: function(data) {
-        return data.features.filter(item => this.filteredIds.indexOf(item.properies.id) === -1 ? item : false);
+        return data.features.filter(item => this.filteredIds.indexOf(item.properties.id) === -1 ? item : false);
     },
 
     _replaceData: function(features) {
@@ -113,7 +113,7 @@ export var GeoJSONService = L.GeoJSON.extend({
 
     stayOrRemoveViaFilteredIds: () => {
         this.eachLayer(layer => {
-            if (this.filteredIds.indexOf(layer.feature.properies.zu_id) === -1) {
+            if (this.filteredIds.indexOf(layer.feature.properties.zu_id) === -1) {
                 layer._path.style.visibility = "hidden";
             } else {
                 if (layer._path.style.visibility === "hidden") {

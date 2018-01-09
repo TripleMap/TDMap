@@ -34,7 +34,7 @@ export var GeoJSONSelection = L.Class.extend({
 
         if (onDataAdd && this.previousLayer.length) {
             for (let i = this.previousLayer.length - 1; i >= 0; i--) {
-                if (this.previousLayer[i].feature.properies.id === layer.feature.properies.id) {
+                if (this.previousLayer[i].feature.properties.id === layer.feature.properties.id) {
                     this.previousLayer[i] = layer;
                 }
             }
@@ -42,7 +42,7 @@ export var GeoJSONSelection = L.Class.extend({
         if (onDataAdd && this.isInSelections(layer)) {
             let layers = this.inSelectionsFeatures.getValue();
             for (let i = 0; i < layers.length; i++) {
-                if (layers[i].feature.properies.id === layer.feature.properies.id) {
+                if (layers[i].feature.properties.id === layer.feature.properties.id) {
                     layers[i] = layer;
                     this.setSelectionStyle(layer);
                 }
@@ -65,7 +65,7 @@ export var GeoJSONSelection = L.Class.extend({
                 this.setSelectionStyle(layer);
             } else {
                 for (let i = this.previousLayer.length - 1; i >= 0; i--) {
-                    if (this.previousLayer[i].feature.properies.id === layer.feature.properies.id) {
+                    if (this.previousLayer[i].feature.properties.id === layer.feature.properties.id) {
                         this.previousLayer.splice(i, 1);
                     }
                 }
@@ -92,12 +92,12 @@ export var GeoJSONSelection = L.Class.extend({
     isInSelections: function(layer) {
         return (this.inSelectionsFeatures
             .getValue()
-            .filter(inSelectionsFeatureId => inSelectionsFeatureId.feature.properies.id === layer.feature.properies.id ? inSelectionsFeatureId : false)
+            .filter(inSelectionsFeatureId => inSelectionsFeatureId.feature.properties.id === layer.feature.properties.id ? inSelectionsFeatureId : false)
             .length > 0);
     },
 
     removeSelectionLayer: function(layer) {
-        this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().filter(item => item.feature.properies.id === layer.feature.properies.id ? false : item));
+        this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().filter(item => item.feature.properties.id === layer.feature.properties.id ? false : item));
     },
 
     clearSelections: function() {
