@@ -86,12 +86,37 @@ export var GeoJSONService = L.GeoJSON.extend({
     _replaceData: function(features) {
         this.clearLayers();
         if (!features) return;
-
-        for (let i = features.length - 1; i >= 0; i--) {
-            this.addData(features[i])
+        if (features.length < 500) {
+            for (let i = features.length - 1; i >= 0; i--) {
+                this.addData(features[i])
+            }
+            this._map.fire("layer:load");
+            this.subscribeOnSelection();
+        } else {
+            // throttling
+            let elemsPer100mTimes = Math.floor(features.length / 250);
+            let elemsPer100msTile = features.length % 250;
+            for (let i = elemsPer100msTile; i >= 1; i--) {
+                this.addData(features[features.length - i]);
+            }
+            let index = 0;
+            let counter = 0;
+            let checkForNext = (t) => {
+                if (t === elemsPer100mTimes) {
+                    this._map.fire("layer:load");
+                    this.subscribeOnSelection();
+                }
+            }
+            for (let t = 1; t <= elemsPer100mTimes; t++) {
+                setTimeout(() => {
+                    for (let z = index, len = (features.length - 1 - elemsPer100msTile) / elemsPer100mTimes; z <= len * t; z++) {
+                        this.addData(features[z]);
+                    }
+                    checkForNext(t)
+                    index += (features.length - elemsPer100msTile) / elemsPer100mTimes;
+                }, 100 * t);
+            }
         }
-        this._map.fire("layer:load");
-        this.subscribeOnSelection();
     },
 
     subscribeOnSelection: function() {
