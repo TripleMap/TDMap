@@ -4,8 +4,8 @@ import { Promises } from "./utils/TDMap.Utils.Promises.js";
 
 // tools
 import { MeasurmentUtils, Measurment } from "./tools/TDMap.Tools.Measurment.js";
-import { SpatialFilterUtils, SpatialFilter }from "./tools/TDMap.Tools.SpatialFilter.js";
-import { PulseMarker, IconPulse }from "./tools/TDMap.Tools.PulseMarker.js";
+import { SpatialFilterUtils, SpatialFilter } from "./tools/TDMap.Tools.SpatialFilter.js";
+import { PulseMarker, IconPulse } from "./tools/TDMap.Tools.PulseMarker.js";
 
 // routing
 import { Routing } from "./routing/TDMap.Routing.Router.js";
@@ -23,53 +23,54 @@ import { CadastralSearchDataService } from './cadastralTools/TDMap.CadastralTool
 
 // complete
 class TDMapConstructor {
-	constructor() {
-		this.Service = {
-			GeoJSONService
-		};
-		this.Layers = {
-			GoogleProvider,
-			YandexProvider,
-			RosreestrProvider
-		};
-		this.Tools = {
-			MeasurmentUtils,
-			Measurment,
-			SpatialFilterUtils,
-			SpatialFilter,
-			IconPulse,
-			PulseMarker
-		};
-		this.Utils = {
-			GeoUtil,
-			Promises
-		};
-		this.CadastralUtils = {
-			CadastralSearchDataService
-		}
-		this.Routing = Routing;
-	}
+    constructor() {
+        this.Service = {
+            GeoJSONService
+        };
+        this.Layers = {
+            GoogleProvider,
+            YandexProvider,
+            RosreestrProvider
+        };
+        this.Tools = {
+            MeasurmentUtils,
+            Measurment,
+            SpatialFilterUtils,
+            SpatialFilter,
+            IconPulse,
+            PulseMarker
+        };
+        this.Utils = {
+            GeoUtil,
+            Promises
+        };
+        this.CadastralUtils = {
+            CadastralSearchDataService
+        }
+        this.Routing = Routing;
+    }
 }
 
 export const TDMap = new TDMapConstructor();
 window.TDMap = TDMap;
 // manager 
-import { Manager } from "./mapping/TDMap.Mapping.Manager.js";
+import { BaseManager } from "./mapping/TDMap.Mapping.Manager.js";
 
 /*
  	params {
 		mapDivId: divid,
-		center: [number, number]
+	{	center: [number, number]
 		zoom: number,
 		editable: boolean,
-		zoomControl: boolea,
-		memorize: boolean
+		zoomControl: boolea,}
+
+		{memorize: boolean}
 	}
 */
-class TDMapManagerConstructor extends Manager {
-	constructor(params) {
-		super(params);
-	}
+class TDMapManagerConstructor extends BaseManager {
+    constructor(mapId, mapOptions, managerOptions) {
+        super(mapId, mapOptions, managerOptions);
+    }
 }
 
 export const TDMapManager = TDMapManagerConstructor;
