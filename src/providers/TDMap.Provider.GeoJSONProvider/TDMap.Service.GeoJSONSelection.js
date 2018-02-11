@@ -145,6 +145,10 @@ export var GeoJSONSelection = L.Class.extend({
 
         layer.setStyle(this.options.activeStyle);
         this.tempSelectedFeature.next(layer);
-        setTimeout(() => this.tempSelectedFeature.getValue().setStyle(tempStyle), 3236);
+        setTimeout(() => layer.setStyle(tempStyle), 3236);
+    },
+
+    hasValues: function() {
+        return this.inSelectionsFeatures.getValue().length > 0;
     }
 });
