@@ -17,7 +17,7 @@ import 'rxjs/add/operator/map';
 export var GeoJSONService = L.GeoJSON.extend({
     // стили приходят с сервера feature.properties.style
     // стили пользователя хранятся на сервере с привязкой к атрибуту
-    initialize: function(options) {
+    initialize: function (options) {
         L.setOptions(this, options);
         L.GeoJSON.prototype.initialize.call(this, null, options);
         this._provider = new GeoJSONProvider(options.dataUrl);
@@ -29,25 +29,40 @@ export var GeoJSONService = L.GeoJSON.extend({
         }
     },
 
-    setStyled: () => (this.styled = true),
-    removeStyles: () => (this.styled = false),
-    setLabeled: () => (this.labeled = true),
-    removeLabels: () => (this.labeled = false),
+    setStyled: function () {
+        this.styled = true
+    },
 
-    onAdd: function(map) {
+    removeStyles: function () {
+        this.styled = false
+    },
+
+    setLabeled: function () {
+        this.labeled = true
+    },
+
+    removeLabels: function () {
+        this.labeled = false
+    },
+
+    updateLabels: function () {
+
+    },
+
+    onAdd: function (map) {
         this._map = map;
         L.GeoJSON.prototype.onAdd.call(this, map);
         this._updateData();
         this._map.on("moveend", this._updateData, this);
     },
 
-    onRemove: function(map) {
+    onRemove: function (map) {
         this.clearLayers();
         L.GeoJSON.prototype.onRemove.call(this, map);
         map.off("moveend", this._updateData, this);
     },
 
-    _updateData: function(e) {
+    _updateData: function (e) {
         let bbox;
         this.options.bounds || this.options.circle ?
             (bbox = this.options.bounds || this.options.circle) :
@@ -63,63 +78,44 @@ export var GeoJSONService = L.GeoJSON.extend({
         this._updateDataByBounds(bbox);
     },
 
-    _updateDataByBounds: function(bbox) {
+    _updateDataByBounds: function (bbox) {
         this._provider
             .getDataByBounds(bbox)
             .map(res => this.filterData(res))
             .subscribe(
-                res => this.featuresFlow.next(res),
+                filtered => this.featuresFlow.next(filtered),
                 error => this.clearLayers()
             );
     },
 
-    _processFeatures: function() {
+    _processFeatures: function () {
         this.featuresFlow
             .map(features => this._replaceData(features))
             .subscribe();
     },
 
-    filterData: function(data) {
-        return data.features.filter(item => this.filteredIds.indexOf(item.properties.id) === -1 ? item : false);
+    filterData: function (data) {
+        if (!this.filteredIds || this.filteredIds.length === 0) {
+            return data.features;
+        }
+
+        return data.features.filter(item => {
+            return this.filteredIds.indexOf(item.properties.id) === -1 ? false : item
+        });
     },
 
-    _replaceData: function(features) {
+    _replaceData: function (features) {
         this.clearLayers();
         if (!features) return;
-        //if (features.length < 500) {
+
         for (let i = features.length - 1; i >= 0; i--) {
             this.addData(features[i])
         }
         this._map.fire("layer:load");
         this.subscribeOnSelection();
-        // } else {
-        // throttling
-        //     let elemsPer100mTimes = Math.floor(features.length / 250);
-        //     let elemsPer100msTile = features.length % 250;
-        //     for (let i = elemsPer100msTile; i >= 1; i--) {
-        //         this.addData(features[features.length - i]);
-        //     }
-        //     let index = 0;
-        //     let counter = 0;
-        //     let checkForNext = (t) => {
-        //         if (t === elemsPer100mTimes) {
-        //             this._map.fire("layer:load");
-        //             this.subscribeOnSelection();
-        //         }
-        //     }
-        //     for (let t = 1; t <= elemsPer100mTimes; t++) {
-        //         setTimeout(() => {
-        //             for (let z = index, len = (features.length - 1 - elemsPer100msTile) / elemsPer100mTimes; z <= len * t; z++) {
-        //                 this.addData(features[z]);
-        //             }
-        //             checkForNext(t)
-        //             index += (features.length - elemsPer100msTile) / elemsPer100mTimes;
-        //         }, 100 * t);
-        //     }
-        // }
     },
 
-    subscribeOnSelection: function() {
+    subscribeOnSelection: function () {
         if (this.options.selectable) {
             this.eachLayer(layer => {
                 this.selections.addSelections(layer, true)
@@ -131,14 +127,14 @@ export var GeoJSONService = L.GeoJSON.extend({
         }
     },
 
-    setFilteredIds: arrayOfId => {
+    setFilteredIds: function (arrayOfId) {
         this.filteredIds = arrayOfId;
-        return this.stayOrRemoveViaFilteredIds();
+        this._updateData();
     },
 
-    stayOrRemoveViaFilteredIds: () => {
+    stayOrRemoveViaFilteredIds: function () {
         this.eachLayer(layer => {
-            if (this.filteredIds.indexOf(layer.feature.properties.zu_id) === -1) {
+            if (this.filteredIds.indexOf(layer.feature.properties.id) === -1) {
                 layer._path.style.visibility = "hidden";
             } else {
                 if (layer._path.style.visibility === "hidden") {
@@ -149,13 +145,13 @@ export var GeoJSONService = L.GeoJSON.extend({
         return this;
     },
 
-    removeFilteredIds: () => {
+    removeFilteredIds: function () {
         this.filteredIds = [];
         this._updateData();
         return this;
     }
 });
 
-export var geoJSONService = function(options) {
+export var geoJSONService = function (options) {
     return new GeoJSONService(options);
 };
