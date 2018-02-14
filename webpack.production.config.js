@@ -9,6 +9,10 @@ module.exports = {
     filename: 'TDMap.min.js',
     path: path.resolve(__dirname, "dist")
   },
+  watch: true,
+  watchOptions: {
+    aggregateTimeout: 100
+  },
   module: {
     loaders: [{
       test: /\.js$/,

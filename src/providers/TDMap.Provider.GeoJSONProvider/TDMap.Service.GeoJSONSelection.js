@@ -2,65 +2,62 @@ import {
     BehaviorSubject
 } from "rxjs/BehaviorSubject";
 
-export var GeoJSONSelection = L.Class.extend({
-    options: {
-        multiple: false,
+export var GeoJSONSelection = {
+    selectOptions: {
         activeStyle: {
             weight: 4,
             color: "#ff6d00"
         }
     },
-
-    initialize: function(options) {
-        L.setOptions(this, options);
-        this.previousLayer = [];
-        this.tempSelectedFeature = new BehaviorSubject(false);
-        this.inSelectionsFeatures = new BehaviorSubject([]);
-        this.changeSelection = new BehaviorSubject([]);
-        document.onkeydown = (e) => {
-            if (e.keyCode === 27) {
-                this.clearSelections();
-            }
-        };
+    options: {
+        multiple: false,
     },
 
-    addSelections: function(eventOrFeature, onDataAdd, multiple) {
-        if (!eventOrFeature) return;
-        let layer = eventOrFeature.layer || eventOrFeature;
+    previousLayer: [],
+    tempSelectedFeature: new BehaviorSubject(false),
+    inSelectionsFeatures: new BehaviorSubject([]),
+    selectedFeaturesIds: new BehaviorSubject([]),
+    changeSelection: new BehaviorSubject({
+        added: [],
+        removed: []
+    }),
+
+    addSelections: function (eventOrFeatureOrFeatureId, onDataAdd, multiple) {
+        if (!eventOrFeatureOrFeatureId) return;
+        let layerOrFeatureId = eventOrFeatureOrFeatureId.layer || eventOrFeatureOrFeatureId;
+        let featureId = (layerOrFeatureId.feature && layerOrFeatureId.feature.properties && layerOrFeatureId.feature.properties.id) ? layerOrFeatureId.feature.properties.id : layerOrFeatureId;
+        let mapLayer;
+        if (typeof eventOrFeatureOrFeatureId === 'string') {
+            this.eachLayer(layer => {
+                if (layer.feature.properties.id === featureId) {
+                    mapLayer = layer;
+                }
+            });
+        } else {
+            mapLayer = layerOrFeatureId;
+        }
+
         let ctrlKey = false;
-        if (eventOrFeature.originalEvent && eventOrFeature.originalEvent.ctrlKey) {
+        if (eventOrFeatureOrFeatureId.originalEvent && eventOrFeatureOrFeatureId.originalEvent.ctrlKey) {
             ctrlKey = true;
         }
 
-        if (onDataAdd && this.previousLayer.length) {
-            for (let i = this.previousLayer.length - 1; i >= 0; i--) {
-                if (this.previousLayer[i].feature.properties.id === layer.feature.properties.id) {
-                    this.previousLayer[i] = layer;
+        if (onDataAdd && this.isInSelections(featureId)) {
+            let featuresIds = this.inSelectionsFeatures.getValue();
+            for (let i = 0; i < featuresIds.length; i++) {
+                if (featuresIds[i] === featureId) {
+                    this.setSelectionStyle(mapLayer);
                 }
-            }
-        }
-        if (onDataAdd && this.isInSelections(layer)) {
-            let layers = this.inSelectionsFeatures.getValue();
-            for (let i = 0; i < layers.length; i++) {
-                if (layers[i].feature.properties.id === layer.feature.properties.id) {
-                    layers[i] = layer;
-                    this.setSelectionStyle(layer);
-                }
-            }
-            this.inSelectionsFeatures.next(layers);
-            this.changeSelection.next({
-                added: [layer],
-                removed: []
-            });
+            };
         }
 
         if (!onDataAdd) {
-            if (!this.isInSelections(layer)) {
+            if (!this.isInSelections(featureId)) {
                 if (this.options.multiple || ctrlKey || multiple) {
-                    this.previousLayer.push(layer);
-                    this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().concat([layer]))
+                    this.previousLayer.push(featureId);
+                    this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().concat([featureId]))
                     this.changeSelection.next({
-                        added: [layer],
+                        added: [featureId],
                         removed: []
                     });
                 } else {
@@ -71,70 +68,86 @@ export var GeoJSONSelection = L.Class.extend({
                             removed: [this.previousLayer[i]]
                         });
                     }
-                    this.previousLayer = [layer];
-                    this.inSelectionsFeatures.next([layer]);
+                    this.previousLayer = [featureId];
+                    this.inSelectionsFeatures.next([featureId]);
                     this.changeSelection.next({
-                        added: [layer],
+                        added: [featureId],
                         removed: []
                     });
                 }
-                this.setSelectionStyle(layer);
+
+                this.setSelectionStyle(mapLayer);
             } else {
                 for (let i = this.previousLayer.length - 1; i >= 0; i--) {
-                    if (this.previousLayer[i].feature.properties.id === layer.feature.properties.id) {
+                    if (this.previousLayer[i] === featureId) {
                         this.previousLayer.splice(i, 1);
                     }
                 }
-                this.removeSelectionLayer(layer);
+                this.removeSelectionLayer(featureId);
             }
         }
     },
 
-    setSelectionStyle: function(layer) {
-        layer.beforeSelectionStyle = {
-            weight: layer.options.weight,
-            color: layer.options.color
-        };
-        layer.setStyle(this.options.activeStyle);
-    },
-
-    setBeforeSelectionStyle: function(layer) {
-        if (layer && layer.beforeSelectionStyle) {
-            layer.setStyle(layer.beforeSelectionStyle);
+    setSelectionStyle: function (layer) {
+        if (layer) {
+            layer.beforeSelectionStyle = {
+                weight: layer.options.weight,
+                color: layer.options.color
+            };
+            layer.setStyle(this.selectOptions.activeStyle);
         }
+
     },
 
-    isInSelections: function(layer) {
-        return (this.inSelectionsFeatures
-            .getValue()
-            .filter(inSelectionsFeatureId => inSelectionsFeatureId.feature.properties.id === layer.feature.properties.id ? inSelectionsFeatureId : false)
-            .length > 0);
-    },
-
-    removeSelectionLayer: function(layer) {
-        this.setBeforeSelectionStyle(layer);
-        this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().filter(item => item.feature.properties.id === layer.feature.properties.id ? false : item));
-        this.changeSelection.next({
-            added: [],
-            removed: [layer]
+    setBeforeSelectionStyle: function (featureId) {
+        this.eachLayer(layer => {
+            if (layer.feature.properties.id === featureId && layer.beforeSelectionStyle) {
+                layer.setStyle(layer.beforeSelectionStyle);
+            }
         });
     },
 
-    clearSelections: function() {
+    isInSelections: function (featureId) {
+        let i,
+            values = this.inSelectionsFeatures.getValue(),
+            len = values.length,
+            inSelectionsFeatureId = false;
+
+        for (i = 0; i < len; i++) {
+            if (values[i] === featureId) {
+                inSelectionsFeatureId = true;
+                break;
+            }
+
+        }
+
+        return inSelectionsFeatureId;
+    },
+
+    removeSelectionLayer: function (featureId) {
+        this.setBeforeSelectionStyle(featureId);
+        this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().filter(inSelectionsFeatureId => inSelectionsFeatureId === featureId ? false : inSelectionsFeatureId));
+        this.changeSelection.next({
+            added: [],
+            removed: [featureId]
+        });
+    },
+
+    clearSelections: function () {
         this.previousLayer = [];
-        let layers = this.inSelectionsFeatures.getValue();
-        for (let i = layers.length - 1; i >= 0; i--) {
-            this.setBeforeSelectionStyle(layers[i]);
+        let featuresIds = this.inSelectionsFeatures.getValue();
+        for (let i = featuresIds.length - 1; i >= 0; i--) {
+            this.setBeforeSelectionStyle(featuresIds[i]);
         }
 
         this.inSelectionsFeatures.next([]);
         this.changeSelection.next({
             added: [],
-            removed: layers
+            removed: featuresIds
         });
     },
 
-    setTempFeature: function(feature) {
+    setTempFeature: function (feature) {
         if (!feature) return;
 
         let layer = feature.layer || feature
@@ -148,7 +161,7 @@ export var GeoJSONSelection = L.Class.extend({
         setTimeout(() => layer.setStyle(tempStyle), 3236);
     },
 
-    hasValues: function() {
+    hasValues: function () {
         return this.inSelectionsFeatures.getValue().length > 0;
     }
-});
+};

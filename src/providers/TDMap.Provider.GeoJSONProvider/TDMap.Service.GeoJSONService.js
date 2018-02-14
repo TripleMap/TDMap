@@ -17,6 +17,8 @@ import 'rxjs/add/operator/map';
 export var GeoJSONService = L.GeoJSON.extend({
     // стили приходят с сервера feature.properties.style
     // стили пользователя хранятся на сервере с привязкой к атрибуту
+
+    includes: GeoJSONSelection,
     initialize: function (options) {
         L.setOptions(this, options);
         L.GeoJSON.prototype.initialize.call(this, null, options);
@@ -24,9 +26,6 @@ export var GeoJSONService = L.GeoJSON.extend({
         this.filteredIds = [];
         this.featuresFlow = new Subject();
         this._processFeatures();
-        if (this.options.selectable) {
-            this.selections = new GeoJSONSelection(this.options.selectionOptions || {});
-        }
     },
 
     setStyled: function () {
@@ -118,12 +117,12 @@ export var GeoJSONService = L.GeoJSON.extend({
     subscribeOnSelection: function () {
         if (this.options.selectable) {
             this.eachLayer(layer => {
-                this.selections.addSelections(layer, true)
+                this.addSelections(layer, true)
             });
 
-            this.on('click', this.selections.addSelections, this.selections);
+            this.on('click', this.addSelections, this);
             this._map.doubleClickZoom.disable();
-            this.on('dblclick', this.selections.clearSelections, this.selections);
+            this.on('dblclick', this.clearSelections, this);
         }
     },
 
