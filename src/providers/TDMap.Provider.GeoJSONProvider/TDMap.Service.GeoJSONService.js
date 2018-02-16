@@ -23,7 +23,7 @@ export var GeoJSONService = L.GeoJSON.extend({
         L.setOptions(this, options);
         L.GeoJSON.prototype.initialize.call(this, null, options);
         this._provider = new GeoJSONProvider(options.dataUrl);
-        this.filteredIds = [];
+        this.filteredIds = null;
         this.featuresFlow = new Subject();
         this._processFeatures();
     },
@@ -94,8 +94,12 @@ export var GeoJSONService = L.GeoJSON.extend({
     },
 
     filterData: function (data) {
-        if (!this.filteredIds || this.filteredIds.length === 0) {
+        if (!this.filteredIds) {
             return data.features;
+        }
+
+        if (this.filteredIds.length === 0) {
+            return [];
         }
 
         return data.features.filter(item => {
@@ -126,8 +130,8 @@ export var GeoJSONService = L.GeoJSON.extend({
         }
     },
 
-    setFilteredIds: function (arrayOfId) {
-        this.filteredIds = arrayOfId;
+    setFilteredIds: function (arrayOfIdOrNull) {
+        this.filteredIds = arrayOfIdOrNull;
         this._updateData();
     },
 
@@ -145,7 +149,7 @@ export var GeoJSONService = L.GeoJSON.extend({
     },
 
     removeFilteredIds: function () {
-        this.filteredIds = [];
+        this.filteredIds = null;
         this._updateData();
         return this;
     }
