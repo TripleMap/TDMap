@@ -19,7 +19,8 @@ export var GeoJSONSelection = {
     selectedFeaturesIds: new BehaviorSubject([]),
     changeSelection: new BehaviorSubject({
         added: [],
-        removed: []
+        removed: [],
+        layerId: null
     }),
 
     addSelections: function (eventOrFeatureOrFeatureId, onDataAdd, multiple) {
@@ -58,21 +59,24 @@ export var GeoJSONSelection = {
                     this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().concat([featureId]))
                     this.changeSelection.next({
                         added: [featureId],
-                        removed: []
+                        removed: [],
+                        layerId: this.options.id || null
                     });
                 } else {
                     for (let i = this.previousLayer.length - 1; i >= 0; i--) {
                         this.setBeforeSelectionStyle(this.previousLayer[i]);
                         this.changeSelection.next({
                             added: [],
-                            removed: [this.previousLayer[i]]
+                            removed: [this.previousLayer[i]],
+                            layerId: this.options.id || null
                         });
                     }
                     this.previousLayer = [featureId];
                     this.inSelectionsFeatures.next([featureId]);
                     this.changeSelection.next({
                         added: [featureId],
-                        removed: []
+                        removed: [],
+                        layerId: this.options.id || null
                     });
                 }
 
@@ -129,7 +133,8 @@ export var GeoJSONSelection = {
         this.inSelectionsFeatures.next(this.inSelectionsFeatures.getValue().filter(inSelectionsFeatureId => inSelectionsFeatureId === featureId ? false : inSelectionsFeatureId));
         this.changeSelection.next({
             added: [],
-            removed: [featureId]
+            removed: [featureId],
+            layerId: this.options.id || null
         });
     },
 
@@ -143,7 +148,8 @@ export var GeoJSONSelection = {
         this.inSelectionsFeatures.next([]);
         this.changeSelection.next({
             added: [],
-            removed: featuresIds
+            removed: featuresIds,
+            layerId: this.options.id || null
         });
     },
 
